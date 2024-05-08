@@ -12,5 +12,5 @@ endif()
 project ("EXTRAME-PRACTICE")
 
 # 包含子项目。
-add_subdirectory ("EXTRAME-PRACTICE")
+add_subdirectory ("src")
 
