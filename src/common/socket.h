@@ -4,10 +4,13 @@
 #include"rapidcsv.h"
 #include <thread>
 #include <cstring>
-
+#include <atomic>
 #ifdef _WIN32
-#include <winsock2.h>
-#pragma comment(lib, "ws2_32.lib")
+
+#include <WinSock2.h>
+#include <Ws2tcpip.h>
+
+#pragma  comment(lib, "Ws2_32.lib")
 #else
 
 #include <sys/socket.h>
@@ -50,13 +53,19 @@ class Socket {
 private:
     std::string server_ip;
     std::map<SUB_ID, IP_ADDRESS> sub_ip_map;
+#ifdef _WIN32
+    SOCKET sockfd;
+#else
     int sockfd;
+#endif
     std::string socket_ip;
 
     int init_ip();  //init server_ip and room_ip_map
     std::thread listen_thread;
 
     void listen_thread_func();
+
+    std::atomic<bool> receive_flag;
 
 public:
     //接受到的消息缓冲区

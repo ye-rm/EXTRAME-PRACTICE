@@ -29,13 +29,20 @@ int main() {
     s3.send_to_server(message{0, message_type::REQUEST_TEMPERATURE, 0});
     s3.send_to_server(message{0, message_type::REQUEST_STATUS, 0});
     s3.send_to_server(message{0, message_type::CHANGE_TEMPERATURE, 26});
+#ifdef _WIN32
+    Sleep(2000);
+#else
     sleep(2);
+#endif
     // 服务端发送信息给客户端，第一个是分机号，第二个是一个消息结构体
     s.send_to_client(1,message{1, message_type::OK, 0});
     s.send_to_client(1,message{1, message_type::REQUEST_TEMPERATURE, 0});
     s.send_to_client(1,message{1, message_type::REQUEST_TEMPERATURE, 0});
+#ifdef _WIN32
+    Sleep(2000);
+#else
     sleep(2);
-
+#endif
     // 判断接收到的信息是否正确
     for (int i = 0; i < 3; ++i) {
         if (slist[i].type!=s.received[i].type) {
@@ -58,5 +65,8 @@ int main() {
         }
         std::cout << "ok" << std::endl;
     }
+    s.stop_listen();
+    s2.stop_listen();
+    s3.stop_listen();
     return 0;
 };

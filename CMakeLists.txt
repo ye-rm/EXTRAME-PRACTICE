@@ -18,6 +18,9 @@ add_library(socket
 
 add_executable(socket_test ./src/common/socket_test.cpp)
 target_link_libraries(socket_test socket)
+if(WIN32)
+  target_link_libraries(socket_test ws2_32)
+endif(WIN32)
 # 包含子项目。
 
 enable_testing()
