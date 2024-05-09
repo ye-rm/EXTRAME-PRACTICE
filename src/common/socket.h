@@ -40,8 +40,10 @@ struct message {
 
 class Socket {
     private:
-        IP_ADDRESS server_ip;
-        std::map<SUB_ID, IP_ADDRESS> room_ip_map;
+        std::string server_ip;
+        std::map<SUB_ID, IP_ADDRESS> sub_ip_map;
+        int sockfd;
+        std::string socket_ip;
         int init_ip();  //init server_ip and room_ip_map
     public:
         //接受到的消息缓冲区
