@@ -1,8 +1,8 @@
 #include<iostream>
-using namespace std;
+#include "./common/socket.h"
 
 int main()
 {
-	cout << "Hello CMake." << endl;
+	Socket s(0);
 	return 0;
 }

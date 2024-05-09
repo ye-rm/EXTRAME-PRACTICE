@@ -1,6 +1,8 @@
 #include<vector>
 #include<map>
 #include<string>
+#include"rapidcsv.h"
+
 
 #ifdef _WIN32
     #include <winsock2.h>
@@ -18,6 +20,8 @@
 #define SUB_ID int
 #define IP_ADDRESS std::string
 typedef struct message message;
+
+const IP_ADDRESS SERVER_IP = "192.168.1.1";
 
 enum message_type {
     CHANGE_TEMPERATURE,
@@ -55,4 +59,5 @@ class Socket {
         int listen_client();
         int stop_listen_client();
         int send_to_client(SUB_ID sub_id, message msg);
+        IP_ADDRESS get_ip(SUB_ID sub_id);   //get ip by sub_id
 };
