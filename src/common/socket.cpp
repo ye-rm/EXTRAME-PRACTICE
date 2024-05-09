@@ -1,12 +1,14 @@
 #include "socket.h"
-
+#include<iostream>
+#include<filesystem>
 int Socket::init_ip() {
-
-    rapidcsv::Document doc("ip.csv");
-    server_ip = SERVER_IP;
-    for (int i = 1; i < doc.GetRowCount(); i++) {
-        sub_ip_map[doc.GetCell<int>(i, 1)] = doc.GetCell<std::string>(i, 2);
-    }
+    //print current directory
+    // std::cout << "current directory: " << std::filesystem::current_path() << std::endl;
+    // rapidcsv::Document doc("ip.csv");
+    // server_ip = SERVER_IP;
+    // for (int i = 1; i < doc.GetRowCount(); i++) {
+    //     sub_ip_map[doc.GetCell<int>(i, 1)] = doc.GetCell<std::string>(i, 2);
+    // }
     return 0;
 }
 

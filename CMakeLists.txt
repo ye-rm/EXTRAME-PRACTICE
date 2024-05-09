@@ -11,5 +11,14 @@ endif()
 
 project ("EXTRAME-PRACTICE")
 
+add_library(socket 
+./src/common/socket.cpp 
+./src/common/socket.h
+./src/common/rapidcsv.h)
+
+add_executable(socket_test ./src/common/socket_test.cpp)
+target_link_libraries(socket_test socket)
 # 包含子项目。
-add_subdirectory ("src")
+
+enable_testing()
+add_test(NAME socket_test COMMAND socket_test)
