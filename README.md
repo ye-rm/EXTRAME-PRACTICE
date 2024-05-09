@@ -21,6 +21,8 @@
   - `common`：公共代码目录
     - `socket.cpp`：套接字操作代码
     - `socket.h`: 套接字操作头文件
+    - `database.c`: 数据库
+    - `database.h`: 数据库头文件
 - `test`：测试代码目录
   - `cooling.cpp`：测试降温功能
   - `heating.cpp`：测试升温功能 
