@@ -45,25 +45,28 @@ int main() {
 #endif
     // 判断接收到的信息是否正确
     for (int i = 0; i < 3; ++i) {
-        if (slist[i].type!=s.received[i].type) {
+        if (slist[i].type!=s.received.front().type) {
             std::cout << "error" << std::endl;
             return 1;
         }
         std::cout << "ok" << std::endl;
+        s.received.pop();
     }
     for (int i = 3; i < 6; ++i) {
-        if (slist[i-3].type!=s.received[i].type) {
+        if (slist[i-3].type!=s.received.front().type) {
             std::cout << "error" << std::endl;
             return 1;
         }
         std::cout << "ok" << std::endl;
+        s.received.pop();
     }
     for (int i = 0; i < s2.received.size(); ++i) {
-        if (clist[i].type!=s2.received[i].type) {
+        if (clist[i].type!=s2.received.front().type) {
             std::cout << "error" << std::endl;
             return 1;
         }
         std::cout << "ok" << std::endl;
+        s2.received.pop();
     }
     s.stop_listen();
     s2.stop_listen();

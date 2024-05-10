@@ -1,5 +1,6 @@
 #include "socket.h"
 #include <iostream>
+std::mutex mutex;
 
 int Socket::init_ip() {
     rapidcsv::Document doc("../iptable.csv");
@@ -92,7 +93,7 @@ Socket::~Socket() {
     //delete all messages
     while (!received.empty()) {
         delete &received.front();
-        received.pop_back();
+        received.pop();
     }
 }
 
@@ -124,7 +125,9 @@ void Socket::listen_thread_func() {
             return;
         }
 #endif
-        received.push_back(*msg);
+        mutex.lock();
+        received.push(*msg);
+        mutex.unlock();
     }
 }
 
@@ -175,5 +178,15 @@ int Socket::send_to_client(int sub_id, message msg) {
 int Socket::stop_listen() {
     receive_flag = false;
     listen_thread.join();
+    return 0;
+}
+
+int Socket::get_msg_queue_and_clear(std::queue<message> &msg_queue) {
+    mutex.lock();
+    msg_queue = received;
+    while (!received.empty()){
+        received.pop();
+    }
+    mutex.unlock();
     return 0;
 }

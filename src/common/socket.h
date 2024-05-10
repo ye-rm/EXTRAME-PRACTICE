@@ -5,6 +5,9 @@
 #include <thread>
 #include <cstring>
 #include <atomic>
+#include <mutex>
+#include <queue>
+
 #ifdef _WIN32
 
 #include <WinSock2.h>
@@ -69,7 +72,7 @@ private:
 
 public:
     //接受到的消息缓冲区
-    std::vector<message> received;
+    std::queue<message> received;
 
     explicit Socket(int s_id);
 
@@ -85,5 +88,6 @@ public:
 
     int send_to_client(SUB_ID sub_id, message msg);
 
+    int get_msg_queue_and_clear(std::queue<message>& msg_queue);
     IP_ADDRESS get_ip(SUB_ID sub_id);   //get ip by sub_id
 };
