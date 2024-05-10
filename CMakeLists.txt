@@ -11,7 +11,6 @@ endif ()
 
 project("EXTRAME-PRACTICE")
 
-add_subdirectory("./src/common/OpenXLSX")
 
 add_library(socket
         ./src/common/socket.cpp
