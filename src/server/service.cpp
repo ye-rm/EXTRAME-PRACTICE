@@ -49,5 +49,26 @@ service::~service() {
 }
 
 int service::get_status() {
+    if (cur_status == FREE) {
+        return FREE;
+    } else {
+        return WORKING;
+    }
+}
 
+int service::get_sub_id() {
+    return sub_id;
+}
+
+int service::get_cur_wind_speed() {
+    return cur_wind_speed;
+}
+
+int service::chahge_working_mood(int mood) {
+    if (mood == 1){
+        cooling = true;
+    }else{
+        cooling = false;
+    }
+    return cooling;
 }

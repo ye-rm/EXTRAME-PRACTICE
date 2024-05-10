@@ -9,6 +9,7 @@
 #include <vector>
 #include <queue>
 #include "service.h"
+#include "../../lib/loguru/loguru.hpp"
 
 class Scheduler{
 private:
@@ -17,7 +18,6 @@ private:
     std::queue<message> message_queue;
     int capicity;
     Socket *server_socket;
-    void init_socket();
     void update_temp(SUB_ID sub_id);
     void create_new_service(SUB_ID sub_id);
     void delete_service(SUB_ID sub_id);

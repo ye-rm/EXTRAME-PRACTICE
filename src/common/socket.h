@@ -7,7 +7,7 @@
 #include <atomic>
 #include <mutex>
 #include <queue>
-#include "OpenXLSX/OpenXLSX.hpp"
+#include "../../lib/loguru/loguru.hpp"
 
 #ifdef _WIN32
 
@@ -32,11 +32,11 @@
 #define IP_ADDRESS std::string
 typedef struct message message;
 
-const IP_ADDRESS SERVER_IP = "127.0.0.2";
+const IP_ADDRESS SERVER_IP = "127.0.0.112";
 
 enum message_type {
     CHANGE_TEMPERATURE,
-    CHANEG_WIND_SPEED,
+    CHANGE_WIND_SPEED,
     REQUEST_TEMPERATURE,
     CHANGE_WORKING_MOOD,
     SEND_TEMPERATURE,
@@ -70,8 +70,9 @@ private:
 
     void listen_thread_func();
 
-    std::atomic<bool> receive_flag;
+    std::atomic<bool> listen_flag = true;
 
+    std::mutex mutex;
 public:
     //接受到的消息缓冲区
     std::queue<message> received;

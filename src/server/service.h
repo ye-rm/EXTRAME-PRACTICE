@@ -5,7 +5,7 @@
 #ifndef EXTRAME_PRACTICE_SERVICE_H
 #define EXTRAME_PRACTICE_SERVICE_H
 #define DEFAULT_TARGET_TEMP 27
-#define DEFAULT_WIND_SPEED 1
+#define DEFAULT_WIND_SPEED 2
 #define FREE 0
 #define WORKING 1
 #include <ctime>

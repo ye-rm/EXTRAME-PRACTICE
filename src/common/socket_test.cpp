@@ -1,5 +1,4 @@
 #include "socket.h"
-#include <iostream>
 
 int main() {
     //ignore SIGPIPE
@@ -46,26 +45,20 @@ int main() {
     // 判断接收到的信息是否正确
     for (int i = 0; i < 3; ++i) {
         if (slist[i].type!=s.received.front().type) {
-            std::cout << "error" << std::endl;
             return 1;
         }
-        std::cout << "ok" << std::endl;
         s.received.pop();
     }
     for (int i = 3; i < 6; ++i) {
         if (slist[i-3].type!=s.received.front().type) {
-            std::cout << "error" << std::endl;
             return 1;
         }
-        std::cout << "ok" << std::endl;
         s.received.pop();
     }
     for (int i = 0; i < s2.received.size(); ++i) {
         if (clist[i].type!=s2.received.front().type) {
-            std::cout << "error" << std::endl;
             return 1;
         }
-        std::cout << "ok" << std::endl;
         s2.received.pop();
     }
     s.stop_listen();

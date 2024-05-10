@@ -1,6 +1,5 @@
 #include "socket.h"
 #include <iostream>
-std::mutex mutex;
 
 int Socket::init_ip() {
     rapidcsv::Document doc("../iptable.csv");
@@ -17,6 +16,7 @@ IP_ADDRESS Socket::get_ip(SUB_ID sub_id) {
 
 Socket::Socket(int s_id) {
     init_ip();
+    LOG_F(INFO, "Socket init for %d", s_id);
 #if defined(_WIN32)
     //same as below, work on windows
     WSADATA wsaData;
@@ -66,7 +66,7 @@ Socket::Socket(int s_id) {
         addr.sin_port = htons(PORT);
         addr.sin_addr.s_addr = inet_addr(server_ip.c_str());
         if (bind(sockfd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-            perror("server socket error, unable to bind");
+            LOG_F(ERROR, "server socket error, unable to bind");
             return;
         }
     } else {
@@ -76,11 +76,12 @@ Socket::Socket(int s_id) {
         addr.sin_port = htons(PORT);
         addr.sin_addr.s_addr = inet_addr(socket_ip.c_str());
         if (bind(sockfd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-            perror("client socket error, unable to bind");
+            LOG_F(ERROR, "client socket error, unable to bind");
             return;
         }
     }
 #endif
+    LOG_F(INFO, "Socket %d init success for %d",sockfd, s_id);
 }
 
 Socket::~Socket() {
@@ -95,33 +96,40 @@ Socket::~Socket() {
         delete &received.front();
         received.pop();
     }
+    //delete all threads
+    listen_flag = false;
+    if (listen_thread.joinable()) {
+        listen_thread.join();
+    }
 }
 
 int Socket::listen_server() {
-    receive_flag = true;
+    listen_flag = true;
     listen_thread = std::thread(&Socket::listen_thread_func, this);
+    LOG_F(INFO, "Socket %d listen server", sockfd);
     return 0;
 }
 
 int Socket::listen_client() {
-    receive_flag = true;
+    listen_flag = true;
     listen_thread = std::thread(&Socket::listen_thread_func, this);
+    LOG_F(INFO, "Socket %d listen client", sockfd);
     return 0;
 }
 
 void Socket::listen_thread_func() {
-    while (receive_flag) {
+    while (listen_flag) {
         struct sockaddr_in client_addr{};
         socklen_t len = sizeof(client_addr);
         message* msg = new message;
 #ifdef _WIN32
         if(recvfrom(sockfd, (char *)msg, sizeof(message), 0, (struct sockaddr *) &client_addr, &len)==SOCKET_ERROR){
-            perror("recvfrom error");
+            LOG_F(WARNING, "recvfrom error");
             return;
         }
 #else
         if (recvfrom(sockfd, &msg, sizeof(message), 0, (struct sockaddr *) &client_addr, &len) < 0) {
-            perror("recvfrom error");
+            LOG_F(WARNING, "recvfrom error");
             return;
         }
 #endif
@@ -141,15 +149,16 @@ int Socket::send_to_server(message msg) {
     memcpy(msge, &msg, sizeof(message));
 #ifdef _WIN32
     if (sendto(sockfd, (char *)msge, sizeof(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
-        perror("sendto server error");
+        LOG_F(WARNING, "sendto server error");
         return -1;
     }
 #else
     if (sendto(sockfd, &msge, sizeof(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
-        perror("sendto server error");
+        LOG_F(WARNING, "sendto server error");
         return -1;
     }
 #endif
+    LOG_F(INFO, "sock %d send to %d",sockfd, msg.sub_id);
     return 0;
 }
 
@@ -163,21 +172,21 @@ int Socket::send_to_client(int sub_id, message msg) {
     memcpy(msge, &msg, sizeof(message));
 #ifdef _WIN32
     if (sendto(sockfd, (char *)msge, sizeof(message), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) == SOCKET_ERROR) {
-        perror("sendto error");
+        LOG_F(WARNING, "%d sendto error",sub_id);
         return -1;
     }
 #else
     if (sendto(sockfd, &msge, sizeof(message), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) < 0) {
-        perror("sendto error");
+        LOG_F(WARNING, "%d sendto error",sub_id);
         return -1;
     }
 #endif
+    LOG_F(INFO, "server send to %d", sub_id);
     return 0;
 }
 
 int Socket::stop_listen() {
-    receive_flag = false;
-    listen_thread.join();
+    listen_flag = false;
     return 0;
 }
 

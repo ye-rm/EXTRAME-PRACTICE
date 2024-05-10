@@ -11,6 +11,8 @@ endif ()
 
 project("EXTRAME-PRACTICE")
 
+set(LOGURU_WITH_STREAMS TRUE)
+add_subdirectory(lib/loguru) # defines target 'loguru::loguru'
 
 add_library(socket
         ./src/common/socket.cpp
@@ -19,6 +21,7 @@ add_library(socket
 if (WIN32)
     target_link_libraries(socket ws2_32)
 endif (WIN32)
+target_link_libraries(socket loguru::loguru)
 
 add_library(service
         ./src/server/service.h
@@ -29,6 +32,7 @@ add_library(server
         src/server/scheduler.cpp
         src/server/scheduler.h
 )
+target_link_libraries(server service)
 
 add_library(client
         ./src/client/client.cpp
@@ -36,7 +40,9 @@ add_library(client
 )
 
 add_executable(SERVER_SIDE src/main.cpp)
-target_link_libraries(server)
+target_link_libraries(SERVER_SIDE PRIVATE loguru::loguru)
+add_executable(server_test ./src/server/server_test.cpp)
+target_link_libraries(server_test server socket)
 
 add_executable(socket_test ./src/common/socket_test.cpp)
 target_link_libraries(socket_test socket)
@@ -44,3 +50,4 @@ target_link_libraries(socket_test socket)
 
 enable_testing()
 add_test(NAME socket_test COMMAND socket_test)
+add_test(NAME server_test COMMAND server_test)
