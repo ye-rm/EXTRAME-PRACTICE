@@ -28,6 +28,12 @@ void Scheduler::handle_message() {
             case CHANEG_WIND_SPEED:
                 update_service_wind_speed(msg.sub_id,msg.paramter);
                 break;
+            case CHANGE_WORKING_MOOD:
+                update_service_working_mode(msg.sub_id,msg.paramter);
+                break;
+            case REQUEST_STATUS:
+                send_service_status(msg.sub_id);
+                break;
             case POWER_ON:
                 create_new_service(msg.sub_id);
                 break;
@@ -89,3 +95,19 @@ void Scheduler::delete_service(int sub_id) {
     }
 }
 
+void Scheduler::update_service_working_mode(int sub_id, int mode) {
+    service *s = find_service_by_sub_id(sub_id);
+    if (s!= nullptr){
+        s->chahge_working_mood(mode);
+    }
+}
+
+void Scheduler::send_service_status(int sub_id) {
+    service *s = find_service_by_sub_id(sub_id);
+    if (s!= nullptr){
+        message msg{sub_id,SEND_STATUS,s->get_status()};
+        server_socket->send_to_client(sub_id, msg);
+    }
+}
+
+void

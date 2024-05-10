@@ -23,6 +23,8 @@ private:
     void delete_service(SUB_ID sub_id);
     void update_service_target_temp(SUB_ID sub_id,int temp);
     void update_service_wind_speed(SUB_ID sub_id,int speed);
+    void update_service_working_mode(SUB_ID sub_id,int mode);
+    void send_service_status(SUB_ID sub_id);
     service* find_service_by_sub_id(SUB_ID sub_id);
 public:
     Scheduler();

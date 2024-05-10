@@ -11,10 +11,20 @@ endif ()
 
 project("EXTRAME-PRACTICE")
 
+add_subdirectory("./src/common/OpenXLSX")
+
 add_library(socket
         ./src/common/socket.cpp
         ./src/common/socket.h
         ./src/common/rapidcsv.h)
+if (WIN32)
+    target_link_libraries(socket ws2_32)
+endif (WIN32)
+
+add_library(service
+        ./src/server/service.h
+        ./src/server/service.cpp
+)
 
 add_library(server
         src/server/scheduler.cpp
@@ -31,9 +41,6 @@ target_link_libraries(server)
 
 add_executable(socket_test ./src/common/socket_test.cpp)
 target_link_libraries(socket_test socket)
-if (WIN32)
-    target_link_libraries(socket_test ws2_32)
-endif (WIN32)
 # 包含子项目。
 
 enable_testing()

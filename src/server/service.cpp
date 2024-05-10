@@ -47,3 +47,7 @@ int service::update_cur_temp(int temp) {
 
 service::~service() {
 }
+
+int service::get_status() {
+
+}

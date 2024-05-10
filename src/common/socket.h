@@ -7,6 +7,7 @@
 #include <atomic>
 #include <mutex>
 #include <queue>
+#include "OpenXLSX/OpenXLSX.hpp"
 
 #ifdef _WIN32
 
@@ -37,6 +38,7 @@ enum message_type {
     CHANGE_TEMPERATURE,
     CHANEG_WIND_SPEED,
     REQUEST_TEMPERATURE,
+    CHANGE_WORKING_MOOD,
     SEND_TEMPERATURE,
     REQUEST_STATUS,
     SEND_STATUS,

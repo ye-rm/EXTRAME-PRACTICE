@@ -29,6 +29,7 @@ public:
     int get_sub_id();
     int update_cur_temp(int temp);
     int get_cur_wind_speed();
+    int chahge_working_mood(int mood);
     int change_wind_speed(int speed);
     int change_target_temp(int temp);
     void generate_detailed_record();
