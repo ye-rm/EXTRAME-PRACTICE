@@ -21,7 +21,7 @@ private:
     void update_temp(SUB_ID sub_id);
     void create_new_service(SUB_ID sub_id);
     void delete_service(SUB_ID sub_id);
-    void update_service_target_temp(SUB_ID sub_id,int temp);
+    void update_service_target_temp(SUB_ID sub_id,double temp);
     void update_service_wind_speed(SUB_ID sub_id,int speed);
     void update_service_working_mode(SUB_ID sub_id,int mode);
     void send_service_status(SUB_ID sub_id);

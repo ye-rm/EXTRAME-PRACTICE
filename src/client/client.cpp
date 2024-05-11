@@ -4,12 +4,12 @@
 #include "client.h"
 
 
-
 Client::Client(int sub_id) {
     this->sub_id = sub_id;
     power_status = false;
-    cur_temp = get_environment_temp();
-    target_temp = 25;
+    init_default_temp();
+    cur_temp = default_temp;
+    target_temp = DEFAULT_TARGET_TEMP;
     cur_wind_speed = SPEED_MEDIUM;
     working_mode = MODE_COOLING;
     cur_status = STATUS_FREE;
@@ -38,41 +38,97 @@ int Client::get_sub_id() {
     return sub_id;
 }
 
-int Client::get_environment_temp() {
-    // 模拟室内温度
-    return 25;
+void Client::get_environment_temp() {
+    emulation_thread = std::thread(&Client::temp_emulation, this);
+}
+
+void Client::temp_emulation() {
+    while (true) {
+        // 开机且总机正在服务分机
+        if (power_status == ON && cur_status == STATUS_WORKING) {
+            //制冷模式
+            if (working_mode == MODE_COOLING) {
+                //房间现在温度大于目标温度，继续制冷
+                if (cur_temp > target_temp) {
+                    switch (cur_wind_speed) {
+                        case SPEED_HIGH:
+                            cur_temp = cur_temp - 1;
+                            break;
+                        case SPEED_MEDIUM:
+                            cur_temp = cur_temp - 0.5;
+                            break;
+                        case SPEED_LOW:
+                            cur_temp = cur_temp - 0.34;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } else if (working_mode == MODE_HEATING) {
+                //房间现在温度小于目标温度，继续制热
+                if (cur_temp < target_temp) {
+                    switch (cur_wind_speed) {
+                        case SPEED_HIGH:
+                            cur_temp = cur_temp + 1;
+                            break;
+                        case SPEED_MEDIUM:
+                            cur_temp = cur_temp + 0.5;
+                            break;
+                        case SPEED_LOW:
+                            cur_temp = cur_temp + 0.34;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }else{
+            //房间空调关机或总机未服务分机
+            //如果当前温度和默认温度相差小于0.2度，认为房间回到默认温度
+            if (fabs(cur_temp - default_temp) < 0.2) {
+                continue;
+            }
+            //如果当前温度大于默认温度，缓慢降温
+            if (cur_temp > default_temp) {
+                cur_temp = cur_temp - 0.5;
+            } else {
+                cur_temp = cur_temp + 0.5;
+            }
+        }
+        sleep(1);
+    }
 }
 
 int Client::change_working_mode(int mode) {
-    if (working_mode==mode) {
+    if (working_mode == mode) {
         return 0;
     }
-    if (mode!=MODE_COOLING && mode!=MODE_HEATING) {
+    if (mode != MODE_COOLING && mode != MODE_HEATING) {
         return -1;
     }
-    message req = {sub_id, message_type::CHANGE_WORKING_MOOD, mode};
+    message req = {sub_id, message_type::CHANGE_WORKING_MOOD,(double) mode};
     client_socket->send_to_server(req);
     return 0;
 }
 
 int Client::change_wind_speed(int speed) {
-    if (cur_wind_speed==speed) {
+    if (cur_wind_speed == speed) {
         return 0;
     }
-    if (speed!=SPEED_HIGH && speed!=SPEED_MEDIUM && speed!=SPEED_LOW) {
+    if (speed != SPEED_HIGH && speed != SPEED_MEDIUM && speed != SPEED_LOW) {
         return -1;
     }
-    message req = {sub_id, message_type::CHANGE_WIND_SPEED, speed};
+    message req = {sub_id, message_type::CHANGE_WIND_SPEED, (double)speed};
     client_socket->send_to_server(req);
     return 0;
 }
 
-int Client::change_target_temp(int temp) {
-    if (temp==target_temp) {
+int Client::change_target_temp(double temp) {
+    if (temp == target_temp) {
         return 0;
     }
     //防止顾客紫砂
-    if (temp<16 || temp>30) {
+    if (temp < 16 || temp > 30) {
         return -1;
     }
     message req = {sub_id, message_type::CHANGE_TEMPERATURE, temp};
@@ -87,10 +143,10 @@ int Client::handle_server_response() {
         switch (msg.type) {
             case message_type::SEND_TEMPERATURE:
                 cur_temp = msg.paramter;
-                LOG_F(INFO, "Client %d get temp %d", sub_id, cur_temp);
+                LOG_F(INFO, "Client %d send temp", sub_id);
                 break;
             case message_type::SEND_STATUS:
-                cur_status = msg.paramter;
+                cur_status =(int) msg.paramter;
                 LOG_F(INFO, "Client %d get status %d", sub_id, cur_status);
                 break;
             case message_type::REQUEST_TEMPERATURE:
@@ -100,6 +156,7 @@ int Client::handle_server_response() {
                 break;
         }
     }
+    return 0;
 }
 
 int Client::send_cur_temp() {
@@ -112,7 +169,7 @@ int Client::power_on() {
     if (power_status) {
         return 0;
     }
-    message req = {sub_id, message_type::POWER_ON, 0};
+    message req = {sub_id, message_type::POWER_ON, ON};
     client_socket->send_to_server(req);
     power_status = true;
     return 0;
@@ -122,8 +179,19 @@ int Client::power_off() {
     if (!power_status) {
         return 0;
     }
-    message req = {sub_id, message_type::POWER_OFF, 0};
+    message req = {sub_id, message_type::POWER_OFF, OFF};
     client_socket->send_to_server(req);
     power_status = false;
     return 0;
+}
+
+void Client::init_default_temp() {
+    rapidcsv::Document doc("../room_msg.csv");
+    size_t room_num = doc.GetRowCount();
+    for (int i = 0; i < room_num; ++i) {
+        if (doc.GetCell<int>(1, i) == sub_id) {
+            default_temp = doc.GetCell<int>(3, i);
+            return;
+        }
+    }
 }

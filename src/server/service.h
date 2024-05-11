@@ -13,8 +13,8 @@
 class service{
 private:
     int sub_id;
-    int cur_temp;
-    int target_temp;
+    double cur_temp;
+    double target_temp;
     int cur_wind_speed;
     bool cooling;
     int cur_status;
@@ -27,11 +27,11 @@ public:
     int get_power();
     bool check_finished();
     int get_sub_id();
-    int update_cur_temp(int temp);
+    int update_cur_temp(double temp);
     int get_cur_wind_speed();
     int chahge_working_mood(int mood);
     int change_wind_speed(int speed);
-    int change_target_temp(int temp);
+    int change_target_temp(double temp);
     void generate_detailed_record();
 };
 

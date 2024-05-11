@@ -2,7 +2,7 @@
 #include <iostream>
 
 int Socket::init_ip() {
-    rapidcsv::Document doc("../iptable.csv");
+    rapidcsv::Document doc("../room_msg.csv");
     server_ip = SERVER_IP;
     for (int i = 0; i < doc.GetRowCount(); i++) {
         sub_ip_map[doc.GetCell<int>(1, i)] = doc.GetCell<std::string>(2, i);
@@ -121,21 +121,23 @@ void Socket::listen_thread_func() {
     while (listen_flag) {
         struct sockaddr_in client_addr{};
         socklen_t len = sizeof(client_addr);
-        message* msg = new message;
+        message to_store{};
 #ifdef _WIN32
         if(recvfrom(sockfd, (char *)msg, sizeof(message), 0, (struct sockaddr *) &client_addr, &len)==SOCKET_ERROR){
             LOG_F(WARNING, "recvfrom error");
             return;
         }
 #else
-        if (recvfrom(sockfd, &msg, sizeof(message), 0, (struct sockaddr *) &client_addr, &len) < 0) {
+        if (recvfrom(sockfd, &to_store, sizeof(message), 0, (struct sockaddr *) &client_addr, &len) < 0) {
             LOG_F(WARNING, "recvfrom error");
             return;
         }
 #endif
         mutex.lock();
-        received.push(*msg);
+        received.push(to_store);
         mutex.unlock();
+        LOG_F(INFO, "Socket %d received from %s", sockfd, inet_ntoa(client_addr.sin_addr));
+        LOG_F(INFO, "received msg sub_id :%d, para:%f", to_store.sub_id, to_store.paramter);
     }
 }
 
@@ -145,20 +147,19 @@ int Socket::send_to_server(message msg) {
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
     server_addr.sin_addr.s_addr = inet_addr(server_ip.c_str());
-    message* msge = new message;
-    memcpy(msge, &msg, sizeof(message));
+    message tosend = msg;
 #ifdef _WIN32
     if (sendto(sockfd, (char *)msge, sizeof(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
         LOG_F(WARNING, "sendto server error");
         return -1;
     }
 #else
-    if (sendto(sockfd, &msge, sizeof(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
+    if (sendto(sockfd, &tosend, sizeof(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
         LOG_F(WARNING, "sendto server error");
         return -1;
     }
 #endif
-    LOG_F(INFO, "sock %d send to %d",sockfd, msg.sub_id);
+    LOG_F(INFO, "sub %d send to server",msg.sub_id);
     return 0;
 }
 
@@ -168,20 +169,19 @@ int Socket::send_to_client(int sub_id, message msg) {
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(PORT);
     client_addr.sin_addr.s_addr = inet_addr(sub_ip_map[sub_id].c_str());
-    message *msge = new message;
-    memcpy(msge, &msg, sizeof(message));
+    message tosend = msg;
 #ifdef _WIN32
     if (sendto(sockfd, (char *)msge, sizeof(message), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) == SOCKET_ERROR) {
         LOG_F(WARNING, "%d sendto error",sub_id);
         return -1;
     }
 #else
-    if (sendto(sockfd, &msge, sizeof(message), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) < 0) {
+    if (sendto(sockfd, &tosend, sizeof(message), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) < 0) {
         LOG_F(WARNING, "%d sendto error",sub_id);
         return -1;
     }
 #endif
-    LOG_F(INFO, "server send to %d", sub_id);
+    LOG_F(INFO, "server send to sub %d", sub_id);
     return 0;
 }
 
@@ -192,8 +192,8 @@ int Socket::stop_listen() {
 
 int Socket::get_msg_queue_and_clear(std::queue<message> &msg_queue) {
     mutex.lock();
-    msg_queue = received;
-    while (!received.empty()){
+    while (!received.empty()) {
+        msg_queue.push(received.front());
         received.pop();
     }
     mutex.unlock();

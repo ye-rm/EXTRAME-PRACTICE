@@ -1,7 +1,7 @@
 #include<vector>
 #include<map>
 #include<string>
-#include"rapidcsv.h"
+#include"../../lib/rapidcsv/rapidcsv.h"
 #include <thread>
 #include <cstring>
 #include <atomic>
@@ -48,11 +48,14 @@ enum message_type {
     OK,
 };
 
+//按一字节对齐
+#pragma pack(1)
 struct message {
     int sub_id;
     message_type type;
-    int paramter;
+    double paramter;
 };
+#pragma pack()
 
 class Socket {
 private:

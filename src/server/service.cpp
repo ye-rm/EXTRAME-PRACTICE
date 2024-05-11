@@ -14,7 +14,7 @@ service::service(int sub_id) {
     cur_status = FREE;
 }
 
-int service::change_target_temp(int temp) {
+int service::change_target_temp(double temp) {
     target_temp = temp;
     return 0;
 }
@@ -40,7 +40,7 @@ bool service::check_finished() {
     }
 }
 
-int service::update_cur_temp(int temp) {
+int service::update_cur_temp(double temp) {
     cur_temp = temp;
     return 0;
 }
