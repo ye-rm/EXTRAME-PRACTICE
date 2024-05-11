@@ -11,6 +11,9 @@
 #include <queue>
 #include "service.h"
 #include "../../lib/loguru/loguru.hpp"
+#include "../../lib/rapidcsv/rapidcsv.h"
+
+#define TIME_SLICE 5
 
 class Scheduler {
 private:
@@ -37,6 +40,12 @@ private:
     void send_temp_request(SUB_ID sub_id);
 
     service *find_service_by_sub_id(SUB_ID sub_id);
+
+    void init_config_file();
+
+    void order_waitinglist();
+
+    void handle_power_off(SUB_ID sub_id);
 
 public:
     Scheduler();

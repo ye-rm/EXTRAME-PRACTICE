@@ -123,3 +123,8 @@ int service::start_service() {
     cur_status = WORKING;
     return 0;
 }
+
+int service::stop_service() {
+    cur_status = FREE;
+    return 0;
+}

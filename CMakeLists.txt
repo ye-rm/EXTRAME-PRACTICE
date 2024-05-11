@@ -40,7 +40,9 @@ target_link_libraries(service db)
 add_library(server
         src/server/scheduler.cpp
         src/server/scheduler.h
+        lib/rapidcsv/rapidcsv.h
 )
+
 target_link_libraries(server service)
 
 add_library(client

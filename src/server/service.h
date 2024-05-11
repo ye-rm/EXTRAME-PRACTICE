@@ -8,6 +8,9 @@
 #define DEFAULT_WIND_SPEED 2
 #define FREE 0
 #define WORKING 1
+#define HIGH 3
+#define MEDIUM 2
+#define LOW 1
 
 #include <ctime>
 #include <string>
@@ -32,6 +35,8 @@ public:
     int get_status();
 
     int start_service();
+
+    int stop_service();
 
     int get_power();
 

@@ -2,9 +2,9 @@
 
 
 Scheduler::Scheduler() {
-    capicity = 10;
     server_socket = new Socket(0);
     server_socket->listen_client();
+    init_config_file();
     LOG_F(INFO, "Scheduler started with capicity %d", capicity);
 }
 
@@ -40,7 +40,7 @@ void Scheduler::handle_message() {
                 create_new_service(msg.sub_id);
                 break;
             case POWER_OFF:
-                delete_service(msg.sub_id);
+                handle_power_off(msg.sub_id);
                 break;
             default:
                 break;
@@ -62,7 +62,14 @@ void Scheduler::update_service_wind_speed(int sub_id, int speed) {
     service *s = find_service_by_sub_id(sub_id);
     if (s != nullptr) {
         s->change_wind_speed(speed);
-        LOG_F(INFO, "service %d wind speed changed to %d", sub_id, speed);
+        if (s->get_status() == WORKING) {
+            s->stop_service();
+            s->generate_detailed_record();
+            s->start_service();
+            LOG_F(INFO, "running service %d wind speed changed to %d and generate detailed list", sub_id, speed);
+        } else {
+            LOG_F(INFO, "service %d wind speed changed to %d", sub_id, speed);
+        }
         return;
     }
     LOG_F(WARNING, "can not change wind speed service %d not found", sub_id);
@@ -142,4 +149,97 @@ void Scheduler::update_service_cur_temp() {
     for (auto s: waiting) {
         send_temp_request(s->get_sub_id());
     }
+}
+
+/*
+ * assume all service wind speed is low, 3 waiting, 3 servicing and not finished
+ * 3 waiting id 1,2,3, 3 servicing id 4,5,6
+ * first in scheduler, 3 servicing pop back and push to waiting
+ * waiting id 1,2,3,6,5,4
+ * then in order_waitinglist
+ * first low id 1,2,3,6,5,4
+ * then low is 4,5,6,3,2,1
+ * so this implement rr when all service wind speed is same
+ */
+void Scheduler::schedule_service() {
+    //update cur temp of all service
+    update_service_cur_temp();
+    while (!servicing.empty()) {
+        service *s = servicing.back();
+        if (s->check_finished()) {
+            s->stop_service();
+            s->generate_detailed_record();
+            delete_service(s->get_sub_id());
+        } else {
+            s->stop_service();
+            s->generate_detailed_record();
+            waiting.push_back(s);
+        }
+        servicing.pop_back();
+    }
+    order_waitinglist();
+    for (int i = 0; i < capicity; ++i) {
+        service *s = waiting.back();
+        s->start_service();
+        servicing.push_back(s);
+        waiting.pop_back();
+    }
+}
+
+void Scheduler::init_config_file() {
+    rapidcsv::Document doc("../serverconfig.csv");
+    capicity = doc.GetCell<int>(0, 1);
+}
+
+// after order the waiting list, the order is front: low, medium, high :end
+void Scheduler::order_waitinglist() {
+    std::vector<service> high;
+    std::vector<service> medium;
+    std::vector<service> low;
+    for (auto s: waiting) {
+        switch (s->get_cur_wind_speed()) {
+            case HIGH:
+                high.push_back(*s);
+                break;
+            case MEDIUM:
+                medium.push_back(*s);
+                break;
+            case LOW:
+                low.push_back(*s);
+                break;
+            default:
+                break;
+        }
+    }
+    waiting.clear();
+    while (!low.empty()) {
+        waiting.push_back(&low.back());
+        low.pop_back();
+    }
+    while (!medium.empty()) {
+        waiting.push_back(&medium.back());
+        medium.pop_back();
+    }
+    while (!high.empty()) {
+        waiting.push_back(&high.back());
+        high.pop_back();
+    }
+}
+
+void Scheduler::handle_power_off(int sub_id) {
+    service *s = find_service_by_sub_id(sub_id);
+    if (s != nullptr) {
+        if (s->get_status() == WORKING){
+            servicing.pop_back();
+            s->stop_service();
+            s->generate_detailed_record();
+            delete_service(sub_id);
+            service *to_add = waiting.back();
+            servicing.push_back(to_add);
+            waiting.pop_back();
+        }else{
+            delete_service(sub_id);
+        }
+    }
+    LOG_F(WARNING, "can not power off service %d not found", sub_id);
 }
