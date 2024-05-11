@@ -33,6 +33,9 @@ void Scheduler::handle_message() {
             case REQUEST_STATUS:
                 send_service_status(msg.sub_id);
                 break;
+            case SEND_TEMPERATURE://client send temperature
+                update_service_cur_temp(msg.sub_id, msg.paramter);
+                break;
             case POWER_ON:
                 create_new_service(msg.sub_id);
                 break;
@@ -43,12 +46,6 @@ void Scheduler::handle_message() {
                 break;
         }
     }
-}
-
-void Scheduler::update_temp(int sub_id) {
-    message msg{sub_id, REQUEST_TEMPERATURE, 0};
-    LOG_F(INFO, "scheduler request temp to %d", sub_id);
-    server_socket->send_to_client(sub_id, msg);
 }
 
 void Scheduler::update_service_target_temp(int sub_id, double temp) {
@@ -115,9 +112,34 @@ void Scheduler::update_service_working_mode(int sub_id, int mode) {
 void Scheduler::send_service_status(int sub_id) {
     service *s = find_service_by_sub_id(sub_id);
     if (s != nullptr) {
-        message msg{sub_id, SEND_STATUS,  (double)s->get_status()};
+        message msg{sub_id, SEND_STATUS, (double) s->get_status()};
         server_socket->send_to_client(sub_id, msg);
         LOG_F(INFO, "server send status to %d", sub_id);
     }
     LOG_F(WARNING, "request status of service %d not found", sub_id);
+}
+
+void Scheduler::send_temp_request(int sub_id) {
+    message msg{sub_id, REQUEST_TEMPERATURE, 0};
+    server_socket->send_to_client(sub_id, msg);
+    LOG_F(INFO, "scheduler request temp to %d", sub_id);
+}
+
+void Scheduler::update_service_cur_temp(int sub_id, double temp) {
+    service *s = find_service_by_sub_id(sub_id);
+    if (s != nullptr) {
+        s->update_cur_temp(temp);
+        LOG_F(INFO, "service %d cur temp updated to %f", sub_id, temp);
+        return;
+    }
+    LOG_F(WARNING, "can not update cur temp service %d not found", sub_id);
+}
+
+void Scheduler::update_service_cur_temp() {
+    for (auto s: servicing) {
+        send_temp_request(s->get_sub_id());
+    }
+    for (auto s: waiting) {
+        send_temp_request(s->get_sub_id());
+    }
 }

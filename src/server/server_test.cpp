@@ -4,16 +4,17 @@
 #include "scheduler.h"
 #include <iostream>
 
-int main(){
+int main() {
     Scheduler scheduler;
-    while (true){
+    while (true) {
 #ifdef _WIN32
         Sleep(1000);
 #else
-        sleep(1);
+        sleep(2);
 #endif
         scheduler.listen_client();
         scheduler.handle_message();
+        scheduler.update_service_cur_temp();
     }
     return 0;
 }

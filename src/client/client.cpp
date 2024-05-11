@@ -34,7 +34,7 @@ int Client::listen_server() {
     return 0;
 }
 
-int Client::get_sub_id() {
+int Client::get_sub_id() const {
     return sub_id;
 }
 
@@ -82,7 +82,7 @@ void Client::temp_emulation() {
                     }
                 }
             }
-        }else{
+        } else {
             //房间空调关机或总机未服务分机
             //如果当前温度和默认温度相差小于0.2度，认为房间回到默认温度
             if (fabs(cur_temp - default_temp) < 0.2) {
@@ -106,7 +106,7 @@ int Client::change_working_mode(int mode) {
     if (mode != MODE_COOLING && mode != MODE_HEATING) {
         return -1;
     }
-    message req = {sub_id, message_type::CHANGE_WORKING_MOOD,(double) mode};
+    message req = {sub_id, message_type::CHANGE_WORKING_MOOD, (double) mode};
     client_socket->send_to_server(req);
     return 0;
 }
@@ -118,7 +118,7 @@ int Client::change_wind_speed(int speed) {
     if (speed != SPEED_HIGH && speed != SPEED_MEDIUM && speed != SPEED_LOW) {
         return -1;
     }
-    message req = {sub_id, message_type::CHANGE_WIND_SPEED, (double)speed};
+    message req = {sub_id, message_type::CHANGE_WIND_SPEED, (double) speed};
     client_socket->send_to_server(req);
     return 0;
 }
@@ -141,13 +141,9 @@ int Client::handle_server_response() {
         message msg = message_queue.front();
         message_queue.pop();
         switch (msg.type) {
-            case message_type::SEND_TEMPERATURE:
-                cur_temp = msg.paramter;
-                LOG_F(INFO, "Client %d send temp", sub_id);
-                break;
-            case message_type::SEND_STATUS:
-                cur_status =(int) msg.paramter;
-                LOG_F(INFO, "Client %d get status %d", sub_id, cur_status);
+            case SEND_STATUS:
+                cur_status = (int) msg.paramter;
+                LOG_F(INFO, "Client %d status changed to %d", sub_id, cur_status);
                 break;
             case message_type::REQUEST_TEMPERATURE:
                 send_cur_temp();
@@ -162,6 +158,7 @@ int Client::handle_server_response() {
 int Client::send_cur_temp() {
     message req = {sub_id, message_type::SEND_TEMPERATURE, cur_temp};
     client_socket->send_to_server(req);
+    LOG_F(INFO, "Client %d send temp %f", sub_id, double (cur_temp));
     return 0;
 }
 
@@ -172,6 +169,7 @@ int Client::power_on() {
     message req = {sub_id, message_type::POWER_ON, ON};
     client_socket->send_to_server(req);
     power_status = true;
+    LOG_F(INFO, "Client %d power on", sub_id);
     return 0;
 }
 
@@ -182,6 +180,7 @@ int Client::power_off() {
     message req = {sub_id, message_type::POWER_OFF, OFF};
     client_socket->send_to_server(req);
     power_status = false;
+    LOG_F(INFO, "Client %d power off", sub_id);
     return 0;
 }
 
@@ -194,4 +193,28 @@ void Client::init_default_temp() {
             return;
         }
     }
+}
+
+bool Client::get_power_status() const {
+    return power_status;
+}
+
+double Client::get_cur_temp() const {
+    return cur_temp;
+}
+
+double Client::get_target_temp() const {
+    return target_temp;
+}
+
+int Client::get_cur_wind_speed() const {
+    return cur_wind_speed;
+}
+
+int Client::get_working_mode() const {
+    return working_mode;
+}
+
+int Client::get_cur_status() const {
+    return cur_status;
 }

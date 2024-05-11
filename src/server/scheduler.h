@@ -4,6 +4,7 @@
 
 #ifndef EXTRAME_PRACTICE_SCHEDULER_H
 #define EXTRAME_PRACTICE_SCHEDULER_H
+
 #include <iostream>
 #include "../common/socket.h"
 #include <vector>
@@ -11,27 +12,44 @@
 #include "service.h"
 #include "../../lib/loguru/loguru.hpp"
 
-class Scheduler{
+class Scheduler {
 private:
-    std::vector<service*> servicing;
-    std::vector<service*> waiting;
+    std::vector<service *> servicing;
+    std::vector<service *> waiting;
     std::queue<message> message_queue;
     int capicity;
     Socket *server_socket;
-    void update_temp(SUB_ID sub_id);
+
+    void update_service_cur_temp(SUB_ID sub_id, double temp);
+
     void create_new_service(SUB_ID sub_id);
+
     void delete_service(SUB_ID sub_id);
-    void update_service_target_temp(SUB_ID sub_id,double temp);
-    void update_service_wind_speed(SUB_ID sub_id,int speed);
-    void update_service_working_mode(SUB_ID sub_id,int mode);
+
+    void update_service_target_temp(SUB_ID sub_id, double temp);
+
+    void update_service_wind_speed(SUB_ID sub_id, int speed);
+
+    void update_service_working_mode(SUB_ID sub_id, int mode);
+
     void send_service_status(SUB_ID sub_id);
-    service* find_service_by_sub_id(SUB_ID sub_id);
+
+    void send_temp_request(SUB_ID sub_id);
+
+    service *find_service_by_sub_id(SUB_ID sub_id);
+
 public:
     Scheduler();
+
     ~Scheduler();
+
     void schedule_service();
-    void send_temp_request(SUB_ID sub_id);
+
+    void update_service_cur_temp();
+
     void listen_client();
+
     void handle_message();
 };
+
 #endif //EXTRAME_PRACTICE_SCHEDULER_H

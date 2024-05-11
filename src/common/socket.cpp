@@ -81,7 +81,7 @@ Socket::Socket(int s_id) {
         }
     }
 #endif
-    LOG_F(INFO, "Socket %d init success for %d",sockfd, s_id);
+    LOG_F(INFO, "Socket %d init success for %d", sockfd, s_id);
 }
 
 Socket::~Socket() {
@@ -159,7 +159,7 @@ int Socket::send_to_server(message msg) {
         return -1;
     }
 #endif
-    LOG_F(INFO, "sub %d send to server",msg.sub_id);
+    LOG_F(INFO, "sub %d send to server", msg.sub_id);
     return 0;
 }
 
@@ -177,7 +177,7 @@ int Socket::send_to_client(int sub_id, message msg) {
     }
 #else
     if (sendto(sockfd, &tosend, sizeof(message), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) < 0) {
-        LOG_F(WARNING, "%d sendto error",sub_id);
+        LOG_F(WARNING, "%d sendto error", sub_id);
         return -1;
     }
 #endif

@@ -14,6 +14,10 @@ project("EXTRAME-PRACTICE")
 set(LOGURU_WITH_STREAMS TRUE)
 add_subdirectory(lib/loguru) # defines target 'loguru::loguru'
 
+add_compile_options(-l sqlite3)
+
+add_library(db ./sqlite/sqlite3.c)
+
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 add_library(socket
@@ -29,7 +33,9 @@ target_link_libraries(socket loguru::loguru)
 add_library(service
         ./src/server/service.h
         ./src/server/service.cpp
+        ./sqlite/sqlite3.h
 )
+target_link_libraries(service db)
 
 add_library(server
         src/server/scheduler.cpp
@@ -46,6 +52,9 @@ add_library(client
 add_executable(SERVER_SIDE src/main.cpp)
 target_link_libraries(SERVER_SIDE PRIVATE loguru::loguru)
 
+add_executable(service_test ./src/server/service_test.cpp)
+target_link_libraries(service_test service loguru::loguru)
+
 add_executable(server_test ./src/server/server_test.cpp)
 target_link_libraries(server_test server socket)
 
@@ -59,3 +68,4 @@ target_link_libraries(socket_test socket)
 enable_testing()
 add_test(NAME socket_test COMMAND socket_test)
 add_test(NAME server_test COMMAND server_test)
+add_test(NAME service_test COMMAND service_test)

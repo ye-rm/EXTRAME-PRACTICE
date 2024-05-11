@@ -94,6 +94,7 @@ public:
 
     int send_to_client(SUB_ID sub_id, message msg);
 
-    int get_msg_queue_and_clear(std::queue<message>& msg_queue);
+    int get_msg_queue_and_clear(std::queue<message> &msg_queue);
+
     IP_ADDRESS get_ip(SUB_ID sub_id);   //get ip by sub_id
 };

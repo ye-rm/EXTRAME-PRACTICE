@@ -8,9 +8,13 @@
 #define DEFAULT_WIND_SPEED 2
 #define FREE 0
 #define WORKING 1
-#include <ctime>
 
-class service{
+#include <ctime>
+#include <string>
+#include "../../lib/loguru/loguru.hpp"
+#include "../../sqlite/sqlite3.h"
+
+class service {
 private:
     int sub_id;
     double cur_temp;
@@ -22,16 +26,29 @@ private:
     time_t start_time;
 public:
     service(int sub_id);
+
     ~service();
+
     int get_status();
+
+    int start_service();
+
     int get_power();
+
     bool check_finished();
+
     int get_sub_id();
+
     int update_cur_temp(double temp);
+
     int get_cur_wind_speed();
+
     int chahge_working_mood(int mood);
+
     int change_wind_speed(int speed);
+
     int change_target_temp(double temp);
+
     void generate_detailed_record();
 };
 
