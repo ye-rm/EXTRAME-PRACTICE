@@ -13,17 +13,7 @@
 #include <cmath>
 #include <thread>
 #include <chrono>
-
-#define STATUS_WORKING 1
-#define STATUS_FREE 0
-#define MODE_COOLING 1
-#define MODE_HEATING 2
-#define SPEED_HIGH 3
-#define SPEED_MEDIUM 2
-#define SPEED_LOW 1
-#define DEFAULT_TARGET_TEMP 27
-#define ON true
-#define OFF false
+#include "../common/common.h"
 
 class Client {
 private:
@@ -37,14 +27,13 @@ private:
     int cur_status;
     Socket *client_socket;
     std::queue<message> message_queue;
-
     void init_default_temp();
-
     int send_cur_temp();
-
     void temp_emulation();
-
+    int send_finished();//发送服务完成消息
     std::thread emulation_thread;
+    std::thread working_thread;
+    void client_working();
 public:
     explicit Client(int sub_id);
 
@@ -59,6 +48,9 @@ public:
     int handle_server_response();//处理服务端的响应
     int power_on();//开机
     int power_off();//关机
+    int start_client_working();//开始服务
+    int check_finished();//检查是否已经完成服务,如果任务完成发送服务完成消息，并关机
+    int ignore();//清空消息队列
     //用于gui获取需要的信息
     int get_sub_id() const;//获取分机号
     bool get_power_status() const;//获取开关机状态

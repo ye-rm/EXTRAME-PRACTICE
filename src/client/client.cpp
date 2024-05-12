@@ -10,9 +10,9 @@ Client::Client(int sub_id) {
     init_default_temp();
     cur_temp = default_temp;
     target_temp = DEFAULT_TARGET_TEMP;
-    cur_wind_speed = SPEED_MEDIUM;
-    working_mode = MODE_COOLING;
-    cur_status = STATUS_FREE;
+    cur_wind_speed = DEFAULT_SPEED;
+    working_mode = COOLING_MODE;
+    cur_status = WAITING;
     client_socket = new Socket(sub_id);
     client_socket->listen_server();
     LOG_F(INFO, "Client %d init", sub_id);
@@ -45,37 +45,37 @@ void Client::get_environment_temp() {
 void Client::temp_emulation() {
     while (true) {
         // 开机且总机正在服务分机
-        if (power_status == ON && cur_status == STATUS_WORKING) {
+        if (power_status == ON && cur_status == WORKING) {
             //制冷模式
-            if (working_mode == MODE_COOLING) {
+            if (working_mode == COOLING_MODE) {
                 //房间现在温度大于目标温度，继续制冷
                 if (cur_temp > target_temp) {
                     switch (cur_wind_speed) {
-                        case SPEED_HIGH:
+                        case HIGH_SPEED:
                             cur_temp = cur_temp - 1;
                             break;
-                        case SPEED_MEDIUM:
+                        case MEDIUM_SPEED:
                             cur_temp = cur_temp - 0.5;
                             break;
-                        case SPEED_LOW:
-                            cur_temp = cur_temp - 0.34;
+                        case LOW_SPEED:
+                            cur_temp = cur_temp - 0.33;
                             break;
                         default:
                             break;
                     }
                 }
-            } else if (working_mode == MODE_HEATING) {
+            } else if (working_mode == HEATING_MODE) {
                 //房间现在温度小于目标温度，继续制热
                 if (cur_temp < target_temp) {
                     switch (cur_wind_speed) {
-                        case SPEED_HIGH:
+                        case HIGH_SPEED:
                             cur_temp = cur_temp + 1;
                             break;
-                        case SPEED_MEDIUM:
+                        case MEDIUM_SPEED:
                             cur_temp = cur_temp + 0.5;
                             break;
-                        case SPEED_LOW:
-                            cur_temp = cur_temp + 0.34;
+                        case LOW_SPEED:
+                            cur_temp = cur_temp + 0.33;
                             break;
                         default:
                             break;
@@ -95,7 +95,8 @@ void Client::temp_emulation() {
                 cur_temp = cur_temp + 0.5;
             }
         }
-        sleep(1);
+        LOG_F(INFO, "Client %d cur temp %f", sub_id, double (cur_temp));
+        sleep(SECOND_PER_MINUTE);
     }
 }
 
@@ -103,11 +104,12 @@ int Client::change_working_mode(int mode) {
     if (working_mode == mode) {
         return 0;
     }
-    if (mode != MODE_COOLING && mode != MODE_HEATING) {
+    if (mode != COOLING_MODE && mode != HEATING_MODE) {
         return -1;
     }
     message req = {sub_id, message_type::CHANGE_WORKING_MOOD, (double) mode};
     client_socket->send_to_server(req);
+    working_mode = mode;
     return 0;
 }
 
@@ -115,11 +117,12 @@ int Client::change_wind_speed(int speed) {
     if (cur_wind_speed == speed) {
         return 0;
     }
-    if (speed != SPEED_HIGH && speed != SPEED_MEDIUM && speed != SPEED_LOW) {
+    if (speed != HIGH_SPEED && speed != MEDIUM_SPEED && speed != LOW_SPEED) {
         return -1;
     }
     message req = {sub_id, message_type::CHANGE_WIND_SPEED, (double) speed};
     client_socket->send_to_server(req);
+    cur_wind_speed = speed;
     return 0;
 }
 
@@ -128,11 +131,12 @@ int Client::change_target_temp(double temp) {
         return 0;
     }
     //防止顾客紫砂
-    if (temp < 16 || temp > 30) {
+    if (temp < 0 || temp > 40) {
         return -1;
     }
     message req = {sub_id, message_type::CHANGE_TEMPERATURE, temp};
     client_socket->send_to_server(req);
+    target_temp = temp;
     return 0;
 }
 
@@ -168,7 +172,7 @@ int Client::power_on() {
     }
     message req = {sub_id, message_type::POWER_ON, ON};
     client_socket->send_to_server(req);
-    power_status = true;
+    power_status = ON;
     LOG_F(INFO, "Client %d power on", sub_id);
     return 0;
 }
@@ -179,17 +183,17 @@ int Client::power_off() {
     }
     message req = {sub_id, message_type::POWER_OFF, OFF};
     client_socket->send_to_server(req);
-    power_status = false;
+    power_status = OFF;
     LOG_F(INFO, "Client %d power off", sub_id);
     return 0;
 }
 
 void Client::init_default_temp() {
-    rapidcsv::Document doc("../room_msg.csv");
+    rapidcsv::Document doc(TEST_CONFIG_FILE);
     size_t room_num = doc.GetRowCount();
     for (int i = 0; i < room_num; ++i) {
-        if (doc.GetCell<int>(1, i) == sub_id) {
-            default_temp = doc.GetCell<int>(3, i);
+        if (doc.GetCell<int>(0, i) == sub_id) {
+            default_temp = doc.GetCell<int>(1, i);
             return;
         }
     }
@@ -217,4 +221,62 @@ int Client::get_working_mode() const {
 
 int Client::get_cur_status() const {
     return cur_status;
+}
+
+int Client::check_finished() {
+    if (power_status == OFF){
+        return 0;
+    }
+    if (working_mode== COOLING_MODE){
+        if (cur_temp <= target_temp){
+            power_status = OFF;
+            send_finished();
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        if (cur_temp >= target_temp){
+            power_status = OFF;
+            send_finished();
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}
+
+int Client::ignore() {
+    client_socket->get_msg_queue_and_clear(message_queue);
+    while (!message_queue.empty()){
+        message_queue.pop();
+    }
+    return 0;
+}
+
+int Client::send_finished() {
+    message req = {sub_id, message_type::FINISHED, 0};
+    client_socket->send_to_server(req);
+    LOG_F(INFO, "Client %d send finished", sub_id);
+    return 0;
+}
+
+void Client::client_working() {
+    while (true) {
+        if (power_status == OFF) {
+            continue;
+        }
+        get_status();
+        sleep(1);
+        listen_server();
+        handle_server_response();
+        sleep(SECOND_PER_MINUTE);
+        check_finished();
+    }
+}
+
+int Client::start_client_working() {
+    get_environment_temp();
+    working_thread = std::thread(&Client::client_working, this);
+    return 0;
 }

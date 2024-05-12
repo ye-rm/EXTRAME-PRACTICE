@@ -44,6 +44,7 @@ enum message_type {
     SEND_STATUS,
     POWER_ON,
     POWER_OFF,
+    FINISHED,
     ERR,
     OK,
 };

@@ -34,6 +34,7 @@ add_library(service
         ./src/server/service.h
         ./src/server/service.cpp
         ./sqlite/sqlite3.h
+        ./src/common/common.h
 )
 target_link_libraries(service db)
 
@@ -41,6 +42,7 @@ add_library(server
         src/server/scheduler.cpp
         src/server/scheduler.h
         lib/rapidcsv/rapidcsv.h
+        src/common/common.h
 )
 
 target_link_libraries(server service)
@@ -49,6 +51,7 @@ add_library(client
         ./src/client/client.cpp
         ./src/client/client.h
         ./lib/rapidcsv/rapidcsv.h
+        ./src/common/common.h
 )
 
 add_executable(SERVER_SIDE src/main.cpp)

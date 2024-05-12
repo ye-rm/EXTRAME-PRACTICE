@@ -39,6 +39,7 @@ void Scheduler::handle_message() {
             case POWER_ON:
                 create_new_service(msg.sub_id);
                 break;
+            case FINISHED:
             case POWER_OFF:
                 handle_power_off(msg.sub_id);
                 break;
@@ -102,7 +103,17 @@ service *Scheduler::find_service_by_sub_id(int sub_id) {
 
 void Scheduler::delete_service(int sub_id) {
     service *s = find_service_by_sub_id(sub_id);
-    delete s;
+    if (s != nullptr) {
+        auto it = std::find(servicing.begin(), servicing.end(), s);
+        if (it != servicing.end()) {
+            servicing.erase(it);
+        }
+        it = std::find(waiting.begin(), waiting.end(), s);
+        if (it != waiting.end()) {
+            waiting.erase(it);
+        }
+        delete s;
+    }
     LOG_F(INFO, "service %d deleted", sub_id);
 }
 
@@ -122,8 +133,11 @@ void Scheduler::send_service_status(int sub_id) {
         message msg{sub_id, SEND_STATUS, (double) s->get_status()};
         server_socket->send_to_client(sub_id, msg);
         LOG_F(INFO, "server send status to %d", sub_id);
+    }else {
+        message tmsg{sub_id, SEND_STATUS, WAITING};
+        server_socket->send_to_client(sub_id, tmsg);
+        LOG_F(WARNING, "request status of service %d not found, send free back", sub_id);
     }
-    LOG_F(WARNING, "request status of service %d not found", sub_id);
 }
 
 void Scheduler::send_temp_request(int sub_id) {
@@ -162,23 +176,54 @@ void Scheduler::update_service_cur_temp() {
  * so this implement rr when all service wind speed is same
  */
 void Scheduler::schedule_service() {
-    //update cur temp of all service
+    // update all service cur temp
     update_service_cur_temp();
+    sleep(1);
+    listen_client();
+    handle_message();
+
+    if (servicing.empty() && waiting.empty()) {
+        return;
+    }
+
+    std::vector<service *> not_finished;
+    // 遍历servicing，将已经完成的服务删除，未完成的服务放入not_finished
     while (!servicing.empty()) {
         service *s = servicing.back();
-        if (s->check_finished()) {
-            s->stop_service();
-            s->generate_detailed_record();
-            delete_service(s->get_sub_id());
-        } else {
+//        if (s->check_finished()) {
+//            s->stop_service();
+//            s->generate_detailed_record();
+//            delete_service(s->get_sub_id());
+//            continue;
+//        } else{
+            not_finished.push_back(s);
+            servicing.pop_back();
+//        }
+    }
+    // 如果等待队列和未完成队列的总和小于等于容量，此时将等待和未完成的服务放入服务队列
+    if(waiting.size()+not_finished.size()<=capicity) {
+        for (auto s: not_finished) {
+            servicing.push_back(s);
+        }
+        for (auto s: waiting) {
+            s->start_service();
+            servicing.push_back(s);
+        }
+        waiting.clear();
+        not_finished.clear();
+        return;
+    }else{
+        // 如果等待队列和未完成队列的总和大于容量，此时需要启动调度算法，将未完成的服务停止并生成详单放入等待队列
+        for (auto s: not_finished) {
             s->stop_service();
             s->generate_detailed_record();
             waiting.push_back(s);
         }
-        servicing.pop_back();
     }
+    // 按风速由低到高排序等待队列
     order_waitinglist();
-    for (int i = 0; i < capicity; ++i) {
+    // 将等待队列的服务放入服务队列
+    for (int i = 0; i < capicity && !waiting.empty(); ++i) {
         service *s = waiting.back();
         s->start_service();
         servicing.push_back(s);
@@ -188,24 +233,24 @@ void Scheduler::schedule_service() {
 
 void Scheduler::init_config_file() {
     rapidcsv::Document doc("../serverconfig.csv");
-    capicity = doc.GetCell<int>(0, 1);
+    capicity = doc.GetCell<int>(0, 0);
 }
 
 // after order the waiting list, the order is front: low, medium, high :end
 void Scheduler::order_waitinglist() {
-    std::vector<service> high;
-    std::vector<service> medium;
-    std::vector<service> low;
+    std::vector<service*> high;
+    std::vector<service*> medium;
+    std::vector<service*> low;
     for (auto s: waiting) {
         switch (s->get_cur_wind_speed()) {
-            case HIGH:
-                high.push_back(*s);
+            case HIGH_SPEED:
+                high.push_back(s);
                 break;
-            case MEDIUM:
-                medium.push_back(*s);
+            case MEDIUM_SPEED:
+                medium.push_back(s);
                 break;
-            case LOW:
-                low.push_back(*s);
+            case LOW_SPEED:
+                low.push_back(s);
                 break;
             default:
                 break;
@@ -213,15 +258,15 @@ void Scheduler::order_waitinglist() {
     }
     waiting.clear();
     while (!low.empty()) {
-        waiting.push_back(&low.back());
+        waiting.push_back(low.back());
         low.pop_back();
     }
     while (!medium.empty()) {
-        waiting.push_back(&medium.back());
+        waiting.push_back(medium.back());
         medium.pop_back();
     }
     while (!high.empty()) {
-        waiting.push_back(&high.back());
+        waiting.push_back(high.back());
         high.pop_back();
     }
 }
@@ -229,17 +274,35 @@ void Scheduler::order_waitinglist() {
 void Scheduler::handle_power_off(int sub_id) {
     service *s = find_service_by_sub_id(sub_id);
     if (s != nullptr) {
-        if (s->get_status() == WORKING){
-            servicing.pop_back();
+        // 要关闭的服务在服务队列中，此时需要将其从服务队列中删除，如果等待队列不为空，将等待队列的一个服务放入服务队列
+        if (s->get_status() == WORKING) {
+            // 从服务队列中删除指定服务
+            auto it = std::find(servicing.begin(), servicing.end(), s);
+            if (it != servicing.end()) {
+                servicing.erase(it);
+            }
+            // 删除前生成详单
             s->stop_service();
             s->generate_detailed_record();
-            delete_service(sub_id);
-            service *to_add = waiting.back();
-            servicing.push_back(to_add);
-            waiting.pop_back();
-        }else{
-            delete_service(sub_id);
+            // 如果等待队列不为空，将等待队列的最后一个服务放入服务队列
+            if (!waiting.empty()) {
+                service *to_add = waiting.back();
+                to_add->start_service();
+                servicing.push_back(to_add);
+                waiting.pop_back();
+            }
+        } else {
+            // 要关闭的服务在等待队列中，此时只需要将其从等待队列中删除
+            auto it = std::find(waiting.begin(), waiting.end(), s);
+            if (it != waiting.end()) {
+                waiting.erase(it);
+            }
+            // 如果要关闭的服务曾经服务过，生成详单
+            if (s->ever_serviced()){
+                s->generate_detailed_record();
+            }
         }
+        delete s;
     }
     LOG_F(WARNING, "can not power off service %d not found", sub_id);
 }

@@ -4,18 +4,12 @@
 
 #ifndef EXTRAME_PRACTICE_SERVICE_H
 #define EXTRAME_PRACTICE_SERVICE_H
-#define DEFAULT_TARGET_TEMP 27
-#define DEFAULT_WIND_SPEED 2
-#define FREE 0
-#define WORKING 1
-#define HIGH 3
-#define MEDIUM 2
-#define LOW 1
 
 #include <ctime>
 #include <string>
 #include "../../lib/loguru/loguru.hpp"
 #include "../../sqlite/sqlite3.h"
+#include "../common/common.h"
 
 class service {
 private:
@@ -23,7 +17,8 @@ private:
     double cur_temp;
     double target_temp;
     int cur_wind_speed;
-    bool cooling;
+    int working_mood;
+    bool serviced;
     int cur_status;
     time_t create_time;
     time_t start_time;
@@ -32,21 +27,23 @@ public:
 
     ~service();
 
-    int get_status();
+    int get_status() const;
 
     int start_service();
 
     int stop_service();
 
-    int get_power();
+    int get_working_mood() const;
 
-    bool check_finished();
+    bool check_finished() const;
 
-    int get_sub_id();
+    int get_sub_id() const;
+
+    bool ever_serviced() const;
 
     int update_cur_temp(double temp);
 
-    int get_cur_wind_speed();
+    int get_cur_wind_speed() const;
 
     int chahge_working_mood(int mood);
 

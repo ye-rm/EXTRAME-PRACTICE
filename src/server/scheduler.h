@@ -13,7 +13,6 @@
 #include "../../lib/loguru/loguru.hpp"
 #include "../../lib/rapidcsv/rapidcsv.h"
 
-#define TIME_SLICE 5
 
 class Scheduler {
 private:

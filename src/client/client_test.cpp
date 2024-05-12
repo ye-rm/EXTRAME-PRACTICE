@@ -4,17 +4,29 @@
 #include "client.h"
 
 int main() {
-    Client client(1);
-    client.get_environment_temp();
-    client.power_on();
-    client.change_working_mode(MODE_COOLING);
-    client.change_target_temp(17);
-    client.change_wind_speed(SPEED_HIGH);
-    while (true) {
-        sleep(1);
-        client.listen_server();
-        client.handle_server_response();
-        client.get_status();
+    Client client1(1);
+    client1.start_client_working();
+    client1.power_on();
+    client1.change_wind_speed(LOW_SPEED);
+    client1.change_target_temp(25);
+    sleep(SECOND_PER_MINUTE);
+    sleep(SECOND_PER_MINUTE);
+    sleep(SECOND_PER_MINUTE);
+    sleep(SECOND_PER_MINUTE);
+    sleep(SECOND_PER_MINUTE);
+    sleep(SECOND_PER_MINUTE);
+    client1.power_off();
+    sleep(SECOND_PER_MINUTE);
+    client1.power_on();
+    client1.change_wind_speed(MEDIUM_SPEED);
+    client1.change_target_temp(27);
+    sleep(SECOND_PER_MINUTE);
+    sleep(SECOND_PER_MINUTE);
+    sleep(SECOND_PER_MINUTE);
+    sleep(SECOND_PER_MINUTE);
+    sleep(SECOND_PER_MINUTE);
+    while (true){
+
     }
     return 0;
 }

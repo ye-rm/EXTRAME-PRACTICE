@@ -93,7 +93,6 @@ Socket::~Socket() {
 #endif
     //delete all messages
     while (!received.empty()) {
-        delete &received.front();
         received.pop();
     }
     //delete all threads
