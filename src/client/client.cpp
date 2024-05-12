@@ -26,6 +26,7 @@ Client::~Client() {
 int Client::get_status() {
     message req = {sub_id, message_type::REQUEST_STATUS, 0};
     client_socket->send_to_server(req);
+    LOG_F(INFO, "Client %d request status from server", sub_id);
     return 0;
 }
 
@@ -95,7 +96,7 @@ void Client::temp_emulation() {
                 cur_temp = cur_temp + 0.5;
             }
         }
-        LOG_F(INFO, "Client %d cur temp %f", sub_id, double (cur_temp));
+        LOG_F(INFO, "Client %d cur temp changed to %f", sub_id, double (cur_temp));
         sleep(SECOND_PER_MINUTE);
     }
 }
@@ -110,6 +111,13 @@ int Client::change_working_mode(int mode) {
     message req = {sub_id, message_type::CHANGE_WORKING_MOOD, (double) mode};
     client_socket->send_to_server(req);
     working_mode = mode;
+    char mode_str[10];
+    if (mode == COOLING_MODE) {
+        strcpy(mode_str, "cooling");
+    } else {
+        strcpy(mode_str, "heating");
+    }
+    LOG_F(INFO, "Client %d working mode changed to %s", sub_id, mode_str);
     return 0;
 }
 
@@ -123,6 +131,7 @@ int Client::change_wind_speed(int speed) {
     message req = {sub_id, message_type::CHANGE_WIND_SPEED, (double) speed};
     client_socket->send_to_server(req);
     cur_wind_speed = speed;
+    LOG_F(INFO, "Client %d wind speed changed to %d", sub_id, speed);
     return 0;
 }
 
@@ -137,6 +146,7 @@ int Client::change_target_temp(double temp) {
     message req = {sub_id, message_type::CHANGE_TEMPERATURE, temp};
     client_socket->send_to_server(req);
     target_temp = temp;
+    LOG_F(INFO, "Client %d target temp changed to %f", sub_id, double (temp));
     return 0;
 }
 
@@ -231,6 +241,7 @@ int Client::check_finished() {
         if (cur_temp <= target_temp){
             power_status = OFF;
             send_finished();
+            LOG_F(INFO, "Client %d finished", sub_id);
             return 1;
         } else {
             return 0;
@@ -239,6 +250,7 @@ int Client::check_finished() {
         if (cur_temp >= target_temp){
             power_status = OFF;
             send_finished();
+            LOG_F(INFO, "Client %d finished", sub_id);
             return 1;
         } else {
             return 0;
@@ -264,6 +276,7 @@ int Client::send_finished() {
 void Client::client_working() {
     while (true) {
         if (power_status == OFF) {
+            ignore();
             continue;
         }
         get_status();
@@ -278,5 +291,6 @@ void Client::client_working() {
 int Client::start_client_working() {
     get_environment_temp();
     working_thread = std::thread(&Client::client_working, this);
+    LOG_F(INFO, "Client %d thread start working", sub_id);
     return 0;
 }

@@ -13,6 +13,7 @@ Scheduler::~Scheduler() {
 }
 
 void Scheduler::listen_client() {
+    LOG_F(INFO, "scheduler fetch message from client");
     server_socket->get_msg_queue_and_clear(message_queue);
 }
 
@@ -166,6 +167,7 @@ void Scheduler::update_service_cur_temp() {
     for (auto s: waiting) {
         send_temp_request(s->get_sub_id());
     }
+    LOG_F(INFO, "scheduler request temp to all service");
 }
 
 /*
@@ -180,12 +182,15 @@ void Scheduler::update_service_cur_temp() {
  */
 void Scheduler::schedule_service() {
     // update all service cur temp
+
     update_service_cur_temp();
     sleep(1);
     listen_client();
     handle_message();
 
+    LOG_F(INFO, "start schedule procedure");
     if (servicing.empty() && waiting.empty()) {
+        LOG_F(INFO, "no service to schedule");
         return;
     }
 
@@ -306,6 +311,7 @@ void Scheduler::handle_power_off(int sub_id) {
             }
         }
         delete s;
+        LOG_F(INFO, "service %d power off", sub_id);
     }
     LOG_F(WARNING, "can not power off service %d not found", sub_id);
 }

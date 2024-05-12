@@ -81,7 +81,7 @@ Socket::Socket(int s_id) {
         }
     }
 #endif
-    LOG_F(INFO, "Socket %d init success for %d", sockfd, s_id);
+//    LOG_F(INFO, "Socket %d init success for %d", sockfd, s_id);
 }
 
 Socket::~Socket() {
@@ -105,14 +105,14 @@ Socket::~Socket() {
 int Socket::listen_server() {
     listen_flag = true;
     listen_thread = std::thread(&Socket::listen_thread_func, this);
-    LOG_F(INFO, "Socket %d listen server", sockfd);
+//    LOG_F(INFO, "Socket %d listen server", sockfd);
     return 0;
 }
 
 int Socket::listen_client() {
     listen_flag = true;
     listen_thread = std::thread(&Socket::listen_thread_func, this);
-    LOG_F(INFO, "Socket %d listen client", sockfd);
+//    LOG_F(INFO, "Socket %d listen client", sockfd);
     return 0;
 }
 
@@ -135,8 +135,8 @@ void Socket::listen_thread_func() {
         mutex.lock();
         received.push(to_store);
         mutex.unlock();
-        LOG_F(INFO, "Socket %d received from %s", sockfd, inet_ntoa(client_addr.sin_addr));
-        LOG_F(INFO, "received msg sub_id :%d, para:%f", to_store.sub_id, to_store.paramter);
+//        LOG_F(INFO, "Socket %d received from %s", sockfd, inet_ntoa(client_addr.sin_addr));
+//        LOG_F(INFO, "received msg sub_id :%d, para:%f", to_store.sub_id, to_store.paramter);
     }
 }
 
@@ -158,7 +158,7 @@ int Socket::send_to_server(message msg) {
         return -1;
     }
 #endif
-    LOG_F(INFO, "sub %d send to server", msg.sub_id);
+//    LOG_F(INFO, "sub %d send to server", msg.sub_id);
     return 0;
 }
 
@@ -180,7 +180,7 @@ int Socket::send_to_client(int sub_id, message msg) {
         return -1;
     }
 #endif
-    LOG_F(INFO, "server send to sub %d", sub_id);
+//    LOG_F(INFO, "server send to sub %d", sub_id);
     return 0;
 }
 
