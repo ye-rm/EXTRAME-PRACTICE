@@ -63,14 +63,17 @@ void Scheduler::update_service_wind_speed(int sub_id, int speed) {
     service *s = find_service_by_sub_id(sub_id);
     if (s != nullptr) {
         s->change_wind_speed(speed);
+        //正在执行的任务改变风速，需要重新生成详单
         if (s->get_status() == WORKING) {
             s->stop_service();
             s->generate_detailed_record();
             s->start_service();
             LOG_F(INFO, "running service %d wind speed changed to %d and generate detailed list", sub_id, speed);
-        } else {
-            LOG_F(INFO, "service %d wind speed changed to %d", sub_id, speed);
+        } else if(s->ever_serviced()){//曾经服务过的任务被调度程序放入等待队列，此时改变风速，需要重新生成详单
+            s->generate_detailed_record();
+            LOG_F(INFO, "waiting service have serviced %d wind speed changed to %d and generate detailed list", sub_id, speed);
         }
+        LOG_F(INFO, "service %d wind speed changed to %d no need to generate", sub_id, speed);
         return;
     }
     LOG_F(WARNING, "can not change wind speed service %d not found", sub_id);
