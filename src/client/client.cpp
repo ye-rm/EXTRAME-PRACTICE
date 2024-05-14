@@ -180,6 +180,11 @@ int Client::power_on() {
     if (power_status) {
         return 0;
     }
+    // 复位初始状态
+    target_temp = DEFAULT_TARGET_TEMP;
+    cur_wind_speed = DEFAULT_SPEED;
+    working_mode = DEFAULT_WORK_MODE;
+    cur_status = WAITING;
     message req = {sub_id, message_type::POWER_ON, ON};
     client_socket->send_to_server(req);
     power_status = ON;
