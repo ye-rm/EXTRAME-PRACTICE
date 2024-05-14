@@ -12,7 +12,7 @@ service::service(int sub_id) {
     target_temp = DEFAULT_TARGET_TEMP;
     cur_wind_speed = DEFAULT_SPEED;
     create_time = time(nullptr);
-    working_mood = COOLING_MODE;
+    working_mood = DEFAULT_WORK_MODE;
     cur_status = WAITING;
 }
 
@@ -86,20 +86,24 @@ void service::generate_detailed_record() {
     }
     char start[20];
     char create[20];
+    char generation[20];
     char fan_speed[10];
     char work_mode[10];
     double fee;
     time_t now = time(nullptr);
     double diff = difftime(now, start_time);
     diff =  diff*(60.0/SECOND_PER_MINUTE);
+    now+=(long)diff;
     long duration = static_cast<long>(diff / 60);
     if (start_time == 0) {
         duration = 0;
     }
     struct tm *s = localtime(&start_time);
     struct tm *c = localtime(&create_time);
+    struct tm *g = localtime(&now);
     strftime(start, 20, "%Y-%m-%d %H:%M:%S", s);
     strftime(create, 20, "%Y-%m-%d %H:%M:%S", c);
+    strftime(generation, 20, "%Y-%m-%d %H:%M:%S", g);
     switch (cur_wind_speed) {
         case LOW_SPEED:
             fee = (double) duration * PRICE_PER_MINUTE_AT_LOW_SPEED;
@@ -121,8 +125,8 @@ void service::generate_detailed_record() {
     }
     char sql[512];
     sprintf(sql,
-            "INSERT INTO ServiceRecords(extension_number,service_creation_time,service_start_time,service_duration,target_temperature, fan_speed, fee , mode) VALUES (%d,'%s', '%s', %ld, %f, '%s', %f,'%s');",
-            sub_id, create, start, duration, target_temp, fan_speed, fee, work_mode);
+            "INSERT INTO ServiceRecords(extension_number,service_creation_time,service_start_time,service_duration,target_temperature, fan_speed, fee , mode, generation_time) VALUES (%d,'%s', '%s', %ld, %f, '%s', %f,'%s','%s');",
+            sub_id, create, start, duration, target_temp, fan_speed, fee, work_mode, generation);
 
     rc = sqlite3_exec(db, sql, nullptr, nullptr, &zErrMsg);
     if (rc != SQLITE_OK) {

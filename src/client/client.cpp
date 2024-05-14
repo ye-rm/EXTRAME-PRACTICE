@@ -11,7 +11,7 @@ Client::Client(int sub_id) {
     cur_temp = default_temp;
     target_temp = DEFAULT_TARGET_TEMP;
     cur_wind_speed = DEFAULT_SPEED;
-    working_mode = COOLING_MODE;
+    working_mode = DEFAULT_WORK_MODE;
     cur_status = WAITING;
     client_socket = new Socket(sub_id);
     client_socket->listen_server();
@@ -277,19 +277,28 @@ void Client::client_working() {
     while (true) {
         if (power_status == OFF) {
             ignore();
+            sleep(5);
             continue;
         }
+        sleep(1);
         get_status();
         sleep(1);
         listen_server();
+        sleep(1);
         handle_server_response();
-        sleep(SECOND_PER_MINUTE);
         check_finished();
+    }
+}
+
+void keep_alive() {
+    while (true) {
+        sleep(2);
     }
 }
 
 int Client::start_client_working() {
     get_environment_temp();
+//    keep_alive_thread = std::thread(keep_alive);
     working_thread = std::thread(&Client::client_working, this);
     LOG_F(INFO, "Client %d thread start working", sub_id);
     return 0;

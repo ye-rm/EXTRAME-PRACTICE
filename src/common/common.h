@@ -16,11 +16,12 @@
 #define OFF 0
 #define SECOND_PER_MINUTE 10
 #define DEFAULT_SPEED MEDIUM_SPEED
-#define TEST_CONFIG_FILE "../cool.csv"
+#define TEST_CONFIG_FILE "../hot.csv"
 #define PRICE_PER_MINUTE_AT_LOW_SPEED 0.33
 #define PRICE_PER_MINUTE_AT_MEDIUM_SPEED 0.5
 #define PRICE_PER_MINUTE_AT_HIGH_SPEED 1.0
 #define DEFAULT_TARGET_TEMP 25
+#define DEFAULT_WORK_MODE HEATING_MODE
 
 //int read_my_config(){
 //    rapidcsv::Document doc(TEST_CONFIG_FILE);

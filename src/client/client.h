@@ -33,6 +33,7 @@ private:
     int send_finished();//发送服务完成消息
     std::thread emulation_thread;
     std::thread working_thread;
+    std::thread keep_alive_thread;
     void client_working();
 public:
     explicit Client(int sub_id);

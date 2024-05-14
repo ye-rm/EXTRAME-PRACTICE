@@ -53,6 +53,7 @@ add_library(client
         ./lib/rapidcsv/rapidcsv.h
         ./src/common/common.h
 )
+target_link_libraries(client socket)
 
 add_executable(SERVER_SIDE src/main.cpp)
 target_link_libraries(SERVER_SIDE PRIVATE loguru::loguru)
@@ -68,9 +69,25 @@ target_link_libraries(client_test client socket)
 
 add_executable(socket_test ./src/common/socket_test.cpp)
 target_link_libraries(socket_test socket)
+
+add_executable(client1 ./test/client1.cpp)
+target_link_libraries(client1 client)
+
+add_executable(client2 ./test/client2.cpp)
+target_link_libraries(client2 client)
+
+add_executable(client3 ./test/client3.cpp)
+target_link_libraries(client3 client)
+
+add_executable(client4 ./test/client4.cpp)
+target_link_libraries(client4 client)
+
+add_executable(client5 ./test/client5.cpp)
+target_link_libraries(client5 client)
 # 包含子项目。
 
 enable_testing()
 add_test(NAME socket_test COMMAND socket_test)
 add_test(NAME server_test COMMAND server_test)
 add_test(NAME service_test COMMAND service_test)
+add_test(NAME all_client_test COMMAND client1 client2 client3 client4 client5)

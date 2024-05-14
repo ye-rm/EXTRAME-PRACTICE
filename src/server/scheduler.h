@@ -9,6 +9,8 @@
 #include "../common/socket.h"
 #include <vector>
 #include <queue>
+#include <thread>
+#include <string>
 #include "service.h"
 #include "../../lib/loguru/loguru.hpp"
 #include "../../lib/rapidcsv/rapidcsv.h"
@@ -21,7 +23,8 @@ private:
     std::queue<message> message_queue;
     int capicity;
     Socket *server_socket;
-
+    std::thread handle_msg_thread;
+    bool scheduler_running= false;
     void update_service_cur_temp(SUB_ID sub_id, double temp);
 
     void create_new_service(SUB_ID sub_id);
@@ -46,6 +49,8 @@ private:
 
     void handle_power_off(SUB_ID sub_id);
 
+    void handle_msg();
+
 public:
     Scheduler();
 
@@ -54,6 +59,10 @@ public:
     void schedule_service();
 
     void update_service_cur_temp();
+
+    std::string* get_queue_info();
+
+    void server_start();
 
     void listen_client();
 

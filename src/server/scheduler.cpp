@@ -13,7 +13,7 @@ Scheduler::~Scheduler() {
 }
 
 void Scheduler::listen_client() {
-    LOG_F(INFO, "scheduler fetch message from client");
+//    LOG_F(INFO, "scheduler fetch message from client");
     server_socket->get_msg_queue_and_clear(message_queue);
 }
 
@@ -70,9 +70,10 @@ void Scheduler::update_service_wind_speed(int sub_id, int speed) {
             s->generate_detailed_record();
             s->start_service();
             LOG_F(INFO, "running service %d wind speed changed to %d and generate detailed list", sub_id, speed);
-        } else if(s->ever_serviced()){//曾经服务过的任务被调度程序放入等待队列，此时改变风速，需要重新生成详单
+        } else if (s->ever_serviced()) {//曾经服务过的任务被调度程序放入等待队列，此时改变风速，需要重新生成详单
             s->generate_detailed_record();
-            LOG_F(INFO, "waiting service have serviced %d wind speed changed to %d and generate detailed list", sub_id, speed);
+            LOG_F(INFO, "waiting service have serviced %d wind speed changed to %d and generate detailed list", sub_id,
+                  speed);
         }
         LOG_F(INFO, "service %d wind speed changed to %d no need to generate", sub_id, speed);
         return;
@@ -137,7 +138,7 @@ void Scheduler::send_service_status(int sub_id) {
         message msg{sub_id, SEND_STATUS, (double) s->get_status()};
         server_socket->send_to_client(sub_id, msg);
         LOG_F(INFO, "server send status to %d", sub_id);
-    }else {
+    } else {
         message tmsg{sub_id, SEND_STATUS, WAITING};
         server_socket->send_to_client(sub_id, tmsg);
         LOG_F(WARNING, "request status of service %d not found, send free back", sub_id);
@@ -167,7 +168,6 @@ void Scheduler::update_service_cur_temp() {
     for (auto s: waiting) {
         send_temp_request(s->get_sub_id());
     }
-    LOG_F(INFO, "scheduler request temp to all service");
 }
 
 /*
@@ -181,52 +181,27 @@ void Scheduler::update_service_cur_temp() {
  * so this implement rr when all service wind speed is same
  */
 void Scheduler::schedule_service() {
-    // update all service cur temp
-
-    update_service_cur_temp();
-    sleep(1);
-    listen_client();
-    handle_message();
-
-    LOG_F(INFO, "start schedule procedure");
-    if (servicing.empty() && waiting.empty()) {
-        LOG_F(INFO, "no service to schedule");
+    // 如果等待队列为空，不需要调度
+    scheduler_running = true;
+    if (waiting.empty()) {
         return;
-    }
-
-    std::vector<service *> not_finished;
-    // 遍历servicing，将已经完成的服务删除，未完成的服务放入not_finished
-    while (!servicing.empty()) {
-        service *s = servicing.back();
-//        if (s->check_finished()) {
-//            s->stop_service();
-//            s->generate_detailed_record();
-//            delete_service(s->get_sub_id());
-//            continue;
-//        } else{
-            not_finished.push_back(s);
-            servicing.pop_back();
-//        }
-    }
-    // 如果等待队列和未完成队列的总和小于等于容量，此时将等待和未完成的服务放入服务队列
-    if(waiting.size()+not_finished.size()<=capicity) {
-        for (auto s: not_finished) {
-            servicing.push_back(s);
-        }
+    } else if (servicing.size() + waiting.size() <= capicity) {
+        // 如果等待队列和未完成队列的总和小于等于容量，此时将等待和未完成的服务放入服务队列
         for (auto s: waiting) {
             s->start_service();
             servicing.push_back(s);
         }
         waiting.clear();
-        not_finished.clear();
         return;
-    }else{
-        // 如果等待队列和未完成队列的总和大于容量，此时需要启动调度算法，将未完成的服务停止并生成详单放入等待队列
-        for (auto s: not_finished) {
-            s->stop_service();
-            s->generate_detailed_record();
-            waiting.push_back(s);
-        }
+    }
+    // 程序到此处，说明待服务对象大于容量，需要调度
+    // 遍历servicing, 停止服务，生成详单，放入等待队列
+    while (!servicing.empty()) {
+        service *s = servicing.back();
+        s->stop_service();
+        s->generate_detailed_record();
+        waiting.push_back(s);
+        servicing.pop_back();
     }
     // 按风速由低到高排序等待队列
     order_waitinglist();
@@ -237,6 +212,7 @@ void Scheduler::schedule_service() {
         servicing.push_back(s);
         waiting.pop_back();
     }
+    scheduler_running = false;
 }
 
 void Scheduler::init_config_file() {
@@ -246,9 +222,9 @@ void Scheduler::init_config_file() {
 
 // after order the waiting list, the order is front: low, medium, high :end
 void Scheduler::order_waitinglist() {
-    std::vector<service*> high;
-    std::vector<service*> medium;
-    std::vector<service*> low;
+    std::vector<service *> high;
+    std::vector<service *> medium;
+    std::vector<service *> low;
     for (auto s: waiting) {
         switch (s->get_cur_wind_speed()) {
             case HIGH_SPEED:
@@ -306,7 +282,7 @@ void Scheduler::handle_power_off(int sub_id) {
                 waiting.erase(it);
             }
             // 如果要关闭的服务曾经服务过，生成详单
-            if (s->ever_serviced()){
+            if (s->ever_serviced()) {
                 s->generate_detailed_record();
             }
         }
@@ -314,4 +290,30 @@ void Scheduler::handle_power_off(int sub_id) {
         LOG_F(INFO, "service %d power off", sub_id);
     }
     LOG_F(WARNING, "can not power off service %d not found", sub_id);
+}
+
+void Scheduler::server_start() {
+    handle_msg_thread = std::thread(&Scheduler::handle_msg, this);
+}
+
+void Scheduler::handle_msg() {
+    while (true) {
+        sleep(1);
+        listen_client();
+        handle_message();
+        sleep(1);
+    }
+}
+
+std::string* Scheduler::get_queue_info() {
+    auto *info = new std::string();
+    *info = "waiting list:\t";
+    for (auto s: waiting) {
+        *info += std::to_string(s->get_sub_id()) + " ";
+    }
+    *info += "    servicing list:\t";
+    for (auto s: servicing) {
+        *info += std::to_string(s->get_sub_id()) + " ";
+    }
+    return info;
 }
