@@ -4,7 +4,6 @@
 
 #ifndef EXTRAME_PRACTICE_COMMON_H
 #define EXTRAME_PRACTICE_COMMON_H
-#include "../../lib/rapidcsv/rapidcsv.h"
 #define HIGH_SPEED 3
 #define MEDIUM_SPEED 2
 #define LOW_SPEED 1
@@ -20,12 +19,7 @@
 #define PRICE_PER_MINUTE_AT_LOW_SPEED 0.33
 #define PRICE_PER_MINUTE_AT_MEDIUM_SPEED 0.5
 #define PRICE_PER_MINUTE_AT_HIGH_SPEED 1.0
-#define DEFAULT_TARGET_TEMP 25
+#define DEFAULT_TARGET_TEMP 22
 #define DEFAULT_WORK_MODE HEATING_MODE
 
-//int read_my_config(){
-//    rapidcsv::Document doc(TEST_CONFIG_FILE);
-//    DEFAULT_TARGET_TEMP = doc.GetCell<int>(3, 0);
-//    return 0;
-//}
 #endif //EXTRAME_PRACTICE_COMMON_H
