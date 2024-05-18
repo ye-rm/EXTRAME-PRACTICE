@@ -19,7 +19,7 @@ set(CMAKE_AUTOUIC ON)
 
 include(FetchContent)
 FetchContent_Declare(LoguruGitRepo
-        GIT_REPOSITORY "https://github.com/emilk/loguru" # can be a filesystem path
+        GIT_REPOSITORY "https://mirror.ghproxy.com/https://github.com/emilk/loguru" # can be a filesystem path
         GIT_TAG        "master"
 )
 # set any loguru compile-time flags before calling MakeAvailable()

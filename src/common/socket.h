@@ -26,7 +26,7 @@
 #define SOCKET_ERROR (-1)
 #endif
 
-#define PORT 6666
+#define PORT 10000
 #define SUB_ID int
 #define MAX_SUB_COUNT 10
 #define IP_ADDRESS std::string

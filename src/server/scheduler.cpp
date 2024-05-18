@@ -216,7 +216,7 @@ void Scheduler::schedule_service() {
 }
 
 void Scheduler::init_config_file() {
-    rapidcsv::Document doc("../serverconfig.csv");
+    rapidcsv::Document doc("/root/projects/EXTRAME-PRACTICE/serverconfig.csv");
     capicity = doc.GetCell<int>(0, 0);
 }
 
