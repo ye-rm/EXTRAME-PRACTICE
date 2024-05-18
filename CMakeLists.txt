@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt: 顶层 CMake 项目文件，在此处执行全局配置
 # 并包含子项目。
 #
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.5)
 
 # 如果支持，请为 MSVC 编译器启用热重载。
 if (POLICY CMP0141)
@@ -17,6 +17,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+include(FetchContent)
+FetchContent_Declare(LoguruGitRepo
+        GIT_REPOSITORY "https://github.com/emilk/loguru" # can be a filesystem path
+        GIT_TAG        "master"
+)
+# set any loguru compile-time flags before calling MakeAvailable()
+set(LOGURU_WITH_STREAMS TRUE)
+FetchContent_MakeAvailable(LoguruGitRepo) # defines target 'loguru::loguru'
 
 find_package(Qt5 COMPONENTS
         Core
@@ -61,8 +69,8 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif ()
 
 # set up loguru to log
-set(LOGURU_WITH_STREAMS TRUE)
-add_subdirectory(lib/loguru) # defines target 'loguru::loguru'
+#set(LOGURU_WITH_STREAMS TRUE)
+#add_subdirectory(lib/loguru) # defines target 'loguru::loguru'
 
 # set up sqlite3
 add_compile_options(-l sqlite3)
