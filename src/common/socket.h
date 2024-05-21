@@ -7,7 +7,7 @@
 #include <atomic>
 #include <mutex>
 #include <queue>
-#include "../../lib/loguru/loguru.hpp"
+#include "../../loguru.hpp"
 
 #ifdef _WIN32
 

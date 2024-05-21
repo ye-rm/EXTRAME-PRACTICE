@@ -7,7 +7,7 @@
 
 #include <ctime>
 #include <string>
-#include "../../lib/loguru/loguru.hpp"
+#include "../../loguru.hpp"
 #include "../../sqlite/sqlite3.h"
 #include "../common/common.h"
 

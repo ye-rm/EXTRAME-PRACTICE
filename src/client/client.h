@@ -5,7 +5,7 @@
 #ifndef EXTRAME_PRACTICE_CLIENT_H
 #define EXTRAME_PRACTICE_CLIENT_H
 
-#include "../../lib/loguru/loguru.hpp"
+#include "../../loguru.hpp"
 #include "../../lib/rapidcsv/rapidcsv.h"
 #include "../common/socket.h"
 #include <queue>

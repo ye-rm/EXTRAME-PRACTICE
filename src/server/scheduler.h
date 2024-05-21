@@ -12,7 +12,7 @@
 #include <thread>
 #include <string>
 #include "service.h"
-#include "../../lib/loguru/loguru.hpp"
+#include "../../loguru.hpp"
 #include "../../lib/rapidcsv/rapidcsv.h"
 
 

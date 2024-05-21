@@ -1,6 +1,6 @@
 #include<iostream>
 #include "./common/socket.h"
-#include "../lib/loguru/loguru.hpp"
+#include "../loguru.hpp"
 
 int main(int argc, char *argv[]) {
 

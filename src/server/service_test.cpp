@@ -3,7 +3,7 @@
 //
 #include "service.h"
 #include <unistd.h>
-#include "../../lib/loguru/loguru.hpp"
+#include "../../loguru.hpp"
 
 int main(){
     service s(1);

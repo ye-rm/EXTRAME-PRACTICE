@@ -13,9 +13,9 @@ project("EXTRAME-PRACTICE")
 
 # set up qt environment
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTORCC ON)
+#set(CMAKE_AUTOUIC ON)
 
 include(FetchContent)
 FetchContent_Declare(LoguruGitRepo
@@ -68,9 +68,6 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     endforeach (QT_LIB)
 endif ()
 
-# set up loguru to log
-#set(LOGURU_WITH_STREAMS TRUE)
-#add_subdirectory(lib/loguru) # defines target 'loguru::loguru'
 
 # set up sqlite3
 add_compile_options(-l sqlite3)
