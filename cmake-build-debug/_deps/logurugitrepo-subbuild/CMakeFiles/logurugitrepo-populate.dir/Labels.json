@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/CMakeFiles/logurugitrepo-populate"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/CMakeFiles/logurugitrepo-populate.rule"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/CMakeFiles/logurugitrepo-populate-complete.rule"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/logurugitrepo-populate-prefix/src/logurugitrepo-populate-stamp/logurugitrepo-populate-build.rule"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/logurugitrepo-populate-prefix/src/logurugitrepo-populate-stamp/logurugitrepo-populate-configure.rule"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/logurugitrepo-populate-prefix/src/logurugitrepo-populate-stamp/logurugitrepo-populate-download.rule"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/logurugitrepo-populate-prefix/src/logurugitrepo-populate-stamp/logurugitrepo-populate-install.rule"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/logurugitrepo-populate-prefix/src/logurugitrepo-populate-stamp/logurugitrepo-populate-mkdir.rule"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/logurugitrepo-populate-prefix/src/logurugitrepo-populate-stamp/logurugitrepo-populate-patch.rule"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/logurugitrepo-populate-prefix/src/logurugitrepo-populate-stamp/logurugitrepo-populate-test.rule"
+		},
+		{
+			"file" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/logurugitrepo-populate-prefix/src/logurugitrepo-populate-stamp/logurugitrepo-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"logurugitrepo-populate"
+		],
+		"name" : "logurugitrepo-populate"
+	}
+}

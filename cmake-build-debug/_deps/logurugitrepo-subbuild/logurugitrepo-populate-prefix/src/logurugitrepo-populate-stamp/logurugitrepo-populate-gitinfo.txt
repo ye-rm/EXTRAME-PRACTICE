@@ -1,0 +1,15 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The download step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+method=git
+command=/home/ye/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake;-P;/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-subbuild/logurugitrepo-populate-prefix/tmp/logurugitrepo-populate-gitclone.cmake
+source_dir=/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps/logurugitrepo-src
+work_dir=/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug/_deps
+repository=https://mirror.ghproxy.com/https://github.com/emilk/loguru
+remote=origin
+init_submodules=TRUE
+recurse_submodules=--recursive
+submodules=
+CMP0097=NEW
+

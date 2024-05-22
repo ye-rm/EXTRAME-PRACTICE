@@ -1,0 +1,237 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16
+					]
+				},
+				{
+					"build" : "_deps/logurugitrepo-build",
+					"jsonFile" : "directory-_deps.logurugitrepo-build-Debug-c93030dfd5a31bb89094.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "cmake-build-debug/_deps/logurugitrepo-src",
+					"targetIndexes" : 
+					[
+						9
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "EXTRAME-PRACTICE",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "loguru",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						9
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "SERVER_SIDE::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SERVER_SIDE-Debug-d4e3500c806dab584405.json",
+					"name" : "SERVER_SIDE",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "client::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-client-Debug-d453a089959d645c8054.json",
+					"name" : "client",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "client1::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-client1-Debug-18979d7f3b3c6e6dae0a.json",
+					"name" : "client1",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "client2::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-client2-Debug-538d01b7b640bbc5f61b.json",
+					"name" : "client2",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "client3::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-client3-Debug-b2c8fbd200b10378fe81.json",
+					"name" : "client3",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "client4::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-client4-Debug-b75e23b28d609241a75b.json",
+					"name" : "client4",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "client5::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-client5-Debug-ef273b0d707fa00b1fd3.json",
+					"name" : "client5",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "client_test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-client_test-Debug-553fbaa0de7ae0222572.json",
+					"name" : "client_test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "db::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-db-Debug-3d32fe3ecb24b7ee7025.json",
+					"name" : "db",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "loguru::@3bfde8503c52253d5c8d",
+					"jsonFile" : "target-loguru-Debug-9e7c8837c3987b7891e9.json",
+					"name" : "loguru",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "qt_demo::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-qt_demo-Debug-de68c6885230499ea71d.json",
+					"name" : "qt_demo",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "server::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-server-Debug-cd1f88325635f581f9f7.json",
+					"name" : "server",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "server_test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-server_test-Debug-178b4ab964f302aa7ab4.json",
+					"name" : "server_test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "service::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-service-Debug-76928aa17a56b3569df7.json",
+					"name" : "service",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "service_test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-service_test-Debug-edb7bff3a426a97eadfe.json",
+					"name" : "service_test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "socket::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-socket-Debug-69bf6e67c25d9af64683.json",
+					"name" : "socket",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "socket_test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-socket_test-Debug-f47d5c77a7201bae60d9.json",
+					"name" : "socket_test",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/ye/CLionProjects/EXTRAME-PRACTICE/cmake-build-debug",
+		"source" : "/home/ye/CLionProjects/EXTRAME-PRACTICE"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

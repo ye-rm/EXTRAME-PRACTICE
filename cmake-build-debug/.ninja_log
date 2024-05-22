@@ -1,0 +1,13 @@
+# ninja log v5
+1	4730	1716301757878740338	CMakeFiles/db.dir/sqlite/sqlite3.c.o	95ae9ca7d1a3e8ee
+2	3011	1716301756161720992	_deps/logurugitrepo-build/CMakeFiles/loguru.dir/loguru.cpp.o	c40a864b64ccbb09
+2	104	1716302191829877458	libdb.a	7840ce759ce8ecce
+6	141	1716302191870877962	_deps/logurugitrepo-build/liblogurud.a	d96967f9798315ef
+3	327	1716302192067880385	CMakeFiles/service.dir/src/server/service.cpp.o	8ac1a9fee34a403
+327	354	1716302192094880717	libservice.a	2308d9aaf905817d
+3	1098	1716302192839889879	CMakeFiles/server_test.dir/src/server/server_test.cpp.o	6f2dbfaef9ecf200
+3	1519	1716302193258895032	CMakeFiles/socket.dir/src/common/socket.cpp.o	c28435a5a2a7b674
+3	1527	1716302193266895130	CMakeFiles/server.dir/src/server/scheduler.cpp.o	2e86994ab9073425
+1519	1573	1716302193310895671	libsocket.a	b907548b3cc964d4
+1527	1574	1716302193310895671	libserver.a	b12d75f0b7e21a0f
+1574	1744	1716302193483897799	server_test	67416184c8ddcdba
