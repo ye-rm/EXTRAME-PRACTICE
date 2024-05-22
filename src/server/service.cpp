@@ -4,6 +4,7 @@
 
 #include "service.h"
 
+// default paras in common/common.h
 service::service(int sub_id) {
     this->sub_id = sub_id;
     serviced = false;
@@ -92,6 +93,7 @@ void service::generate_detailed_record() {
     double fee;
     time_t now = time(nullptr);
     double diff = difftime(now, start_time);
+    // multi factor of duration
     diff =  diff*(60.0/SECOND_PER_MINUTE);
     now+=(long)diff;
     long duration = static_cast<long>(diff / 60);

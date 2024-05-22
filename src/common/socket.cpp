@@ -1,6 +1,7 @@
 #include "socket.h"
 #include <iostream>
 
+//read ip config from file
 int Socket::init_ip() {
     rapidcsv::Document doc("/root/projects/EXTRAME-PRACTICE/room_msg.csv");
     server_ip = SERVER_IP;
@@ -14,6 +15,7 @@ IP_ADDRESS Socket::get_ip(SUB_ID sub_id) {
     return sub_ip_map[sub_id];
 }
 
+// create and bound socket to ip addr
 Socket::Socket(int s_id) {
     init_ip();
     LOG_F(INFO, "Socket init for %d", s_id);

@@ -1,3 +1,7 @@
+//
+// created by wenyuye, encapsue socket as a class for connections between c/s this class can work both linux and windows
+//
+
 #include<vector>
 #include<map>
 #include<string>
@@ -85,16 +89,20 @@ public:
 
     ~Socket();
 
+    // start listen thread, write received msg to buffer
     int listen_server();
 
+    // let client send to server
     int send_to_server(message msg);
 
     int listen_client();
 
     int stop_listen();
 
+    // let server send msg to client, only need room_id to indicate destination
     int send_to_client(SUB_ID sub_id, message msg);
 
+    // copy socket buffer to para then clear
     int get_msg_queue_and_clear(std::queue<message> &msg_queue);
 
     IP_ADDRESS get_ip(SUB_ID sub_id);   //get ip by sub_id

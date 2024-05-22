@@ -1,6 +1,7 @@
 //
-// Created by 98770 on 2024/5/9.
+// Created by yewenyu on 2024/5/9. Scheduler of bupt airconditioner service
 //
+
 
 #ifndef EXTRAME_PRACTICE_SCHEDULER_H
 #define EXTRAME_PRACTICE_SCHEDULER_H
@@ -56,16 +57,22 @@ public:
 
     ~Scheduler();
 
+    // schedule serive is needed every two minutes
     void schedule_service();
 
+    // send request to get temp of every service
     void update_service_cur_temp();
 
+    // return a string reflact to waiting and servicing queue
     std::string* get_queue_info();
 
+    // let server start working after construct
     void server_start();
 
+    // fetch message queue from socket buffer
     void listen_client();
 
+    // handle all msg from client from msg queue
     void handle_message();
 };
 

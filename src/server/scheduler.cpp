@@ -2,8 +2,10 @@
 
 
 Scheduler::Scheduler() {
+    //Socket(0) indicates this is socket for scheduler
     server_socket = new Socket(0);
     server_socket->listen_client();
+    //init default target_temp... for scheduler
     init_config_file();
     LOG_F(INFO, "Scheduler started with capicity %d", capicity);
 }
@@ -40,7 +42,7 @@ void Scheduler::handle_message() {
             case POWER_ON:
                 create_new_service(msg.sub_id);
                 break;
-            case FINISHED:
+            case FINISHED:// if client send finished(arrive target temp), treat as power off signal
             case POWER_OFF:
                 handle_power_off(msg.sub_id);
                 break;
@@ -49,6 +51,7 @@ void Scheduler::handle_message() {
         }
     }
 }
+
 
 void Scheduler::update_service_target_temp(int sub_id, double temp) {
     service *s = find_service_by_sub_id(sub_id);
@@ -92,6 +95,7 @@ void Scheduler::create_new_service(int sub_id) {
     LOG_F(WARNING, "service %d already exist", sub_id);
 }
 
+// if no service, return nullptr
 service *Scheduler::find_service_by_sub_id(int sub_id) {
     for (auto s: servicing) {
         if (s->get_sub_id() == sub_id) {
@@ -132,6 +136,7 @@ void Scheduler::update_service_working_mode(int sub_id, int mode) {
     LOG_F(WARNING, "can not change working mode service %d not found", sub_id);
 }
 
+// server tell client whether its service is in service queue
 void Scheduler::send_service_status(int sub_id) {
     service *s = find_service_by_sub_id(sub_id);
     if (s != nullptr) {
@@ -180,6 +185,7 @@ void Scheduler::update_service_cur_temp() {
  * then low is 4,5,6,3,2,1
  * so this implement rr when all service wind speed is same
  */
+// Todo: for service which was swaped out and in, try not to generate unnecessary deteiled list
 void Scheduler::schedule_service() {
     // 如果等待队列为空，不需要调度
     scheduler_running = true;
@@ -221,6 +227,7 @@ void Scheduler::init_config_file() {
 }
 
 // after order the waiting list, the order is front: low, medium, high :end
+// if all service has equal wind speed, this function will reverse waiting queue
 void Scheduler::order_waitinglist() {
     std::vector<service *> high;
     std::vector<service *> medium;
@@ -292,9 +299,11 @@ void Scheduler::handle_power_off(int sub_id) {
     LOG_F(WARNING, "can not power off service %d not found", sub_id);
 }
 
+
 void Scheduler::server_start() {
     handle_msg_thread = std::thread(&Scheduler::handle_msg, this);
 }
+
 
 void Scheduler::handle_msg() {
     while (true) {

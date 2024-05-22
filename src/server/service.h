@@ -1,5 +1,5 @@
 //
-// Created by 98770 on 2024/5/10.
+// Created by yewenyu on 2024/5/10. the service class of airconditioner
 //
 
 #ifndef EXTRAME_PRACTICE_SERVICE_H

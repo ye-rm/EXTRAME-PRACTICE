@@ -1,5 +1,5 @@
 //
-// Created by 98770 on 2024/5/12.
+// Created by yewenyu on 2024/5/12. define common const values and config path
 //
 
 #ifndef EXTRAME_PRACTICE_COMMON_H

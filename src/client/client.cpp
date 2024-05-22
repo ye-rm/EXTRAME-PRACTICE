@@ -23,6 +23,7 @@ Client::~Client() {
     delete client_socket;
 }
 
+// ask scheduler whether scheduler put this in servicing queue
 int Client::get_status() {
     message req = {sub_id, message_type::REQUEST_STATUS, 0};
     client_socket->send_to_server(req);
@@ -97,6 +98,7 @@ void Client::temp_emulation() {
             }
         }
         LOG_F(INFO, "Client %d cur temp changed to %f", sub_id, double (cur_temp));
+        // run per minute
         sleep(SECOND_PER_MINUTE);
     }
 }
@@ -238,6 +240,9 @@ int Client::get_cur_status() const {
     return cur_status;
 }
 
+// check whether client arrive at target temp
+// in cooling mode , if cur temp is lower than target temp -> finished
+// vice vesa for heating mode
 int Client::check_finished() {
     if (power_status == OFF){
         return 0;
@@ -263,6 +268,7 @@ int Client::check_finished() {
     }
 }
 
+// in power down state, just ignore all msg in queue
 int Client::ignore() {
     client_socket->get_msg_queue_and_clear(message_queue);
     while (!message_queue.empty()){
