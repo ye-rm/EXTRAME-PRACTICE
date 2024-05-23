@@ -80,7 +80,7 @@ void service::generate_detailed_record() {
     sqlite3 *db;
     char *zErrMsg = nullptr;
     int rc;
-    rc = sqlite3_open("../sqlite/airconditioner.sqlite", &db);
+    rc = sqlite3_open(SQLITE_FILE, &db);
     if (rc) {
         LOG_F(ERROR, "Can't open database: %s\n", sqlite3_errmsg(db));
         return;

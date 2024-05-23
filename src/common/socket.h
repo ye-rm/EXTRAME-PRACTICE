@@ -11,6 +11,7 @@
 #include <atomic>
 #include <mutex>
 #include <queue>
+#include "common.h"
 #include "../../loguru.hpp"
 
 #ifdef _WIN32

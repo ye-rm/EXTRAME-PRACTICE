@@ -238,7 +238,7 @@ void Scheduler::schedule_service() {
 }
 
 void Scheduler::init_config_file() {
-    rapidcsv::Document doc("/root/projects/EXTRAME-PRACTICE/serverconfig.csv");
+    rapidcsv::Document doc(SCHEDULER_CONFIG_FILE);
     capicity = doc.GetCell<int>(0, 0);
 }
 
@@ -311,6 +311,7 @@ void Scheduler::handle_power_off(int sub_id) {
         }
         delete s;
         LOG_F(INFO, "service %d power off", sub_id);
+        return;
     }
     LOG_F(WARNING, "can not power off service %d not found", sub_id);
 }

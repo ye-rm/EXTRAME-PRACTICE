@@ -3,7 +3,7 @@
 
 //read ip config from file
 int Socket::init_ip() {
-    rapidcsv::Document doc("/root/projects/EXTRAME-PRACTICE/room_msg.csv");
+    rapidcsv::Document doc(SOCKET_CONFIG_FILE);
     server_ip = SERVER_IP;
     for (int i = 0; i < doc.GetRowCount(); i++) {
         sub_ip_map[doc.GetCell<int>(1, i)] = doc.GetCell<std::string>(2, i);

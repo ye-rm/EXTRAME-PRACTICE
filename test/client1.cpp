@@ -64,6 +64,7 @@ int main(){
     sleep(SECOND_PER_MINUTE);
     // 6
     client.change_wind_speed(HIGH_SPEED);
+    client.power_off();
     sleep(SECOND_PER_MINUTE);
     sleep(SECOND_PER_MINUTE);
     sleep(SECOND_PER_MINUTE);
