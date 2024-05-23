@@ -185,9 +185,9 @@ void Scheduler::update_service_cur_temp() {
  * then low is 4,5,6,3,2,1
  * so this implement rr when all service wind speed is same
  */
-// Todo: for service which was swaped out and in, try not to generate unnecessary deteiled list
 void Scheduler::schedule_service() {
     // 如果等待队列为空，不需要调度
+    std::vector<service *> to_generate;
     scheduler_running = true;
     if (waiting.empty()) {
         return;
@@ -204,8 +204,8 @@ void Scheduler::schedule_service() {
     // 遍历servicing, 停止服务，生成详单，放入等待队列
     while (!servicing.empty()) {
         service *s = servicing.back();
-        s->stop_service();
-        s->generate_detailed_record();
+        // 记录被换出的服务
+        to_generate.push_back(s);
         waiting.push_back(s);
         servicing.pop_back();
     }
@@ -217,6 +217,22 @@ void Scheduler::schedule_service() {
         s->start_service();
         servicing.push_back(s);
         waiting.pop_back();
+    }
+    // 在被换出的服务中查找，如果换出的服务调度后还在服务队列中，继续服务即可，不需要生成详单
+    bool need_generate;
+    for (auto s: to_generate) {
+        need_generate = true;
+        for(auto p: servicing){
+            // 如果服务上一步被换出后，调度后还在服务队列中，不需要生成详单
+            if (s==p){
+                need_generate = false;
+                break;
+            }
+        }
+        if (need_generate) {
+            s->stop_service();
+            s->generate_detailed_record();
+        }
     }
     scheduler_running = false;
 }
