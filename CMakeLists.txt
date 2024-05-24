@@ -11,12 +11,7 @@ endif ()
 
 project("EXTRAME-PRACTICE")
 
-# set up qt environment
-set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_AUTOMOC ON)
-#set(CMAKE_AUTORCC ON)
-#set(CMAKE_AUTOUIC ON)
-
+# add loguru as a dependency
 include(FetchContent)
 FetchContent_Declare(LoguruGitRepo
         GIT_REPOSITORY "https://github.com/emilk/loguru" # can be a filesystem path
@@ -26,6 +21,11 @@ FetchContent_Declare(LoguruGitRepo
 set(LOGURU_WITH_STREAMS TRUE)
 FetchContent_MakeAvailable(LoguruGitRepo) # defines target 'loguru::loguru'
 
+# set up qt environment
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 find_package(Qt5 COMPONENTS
         Core
         Gui
@@ -74,6 +74,7 @@ add_compile_options(-l sqlite3)
 
 add_library(db ./sqlite/sqlite3.c)
 
+# socket library for scheduler and client
 add_library(socket
         ./src/common/socket.cpp
         ./src/common/socket.h
