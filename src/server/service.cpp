@@ -127,8 +127,8 @@ void service::generate_detailed_record() {
     }
     char sql[512];
     sprintf(sql,
-            "INSERT INTO ServiceRecords(extension_number,service_creation_time,service_start_time,service_duration,target_temperature, fan_speed, fee , mode, generation_time) VALUES (%d,'%s', '%s', %ld, %f, '%s', %f,'%s','%s');",
-            sub_id, create, start, duration, target_temp, fan_speed, fee, work_mode, generation);
+            "INSERT INTO ServiceRecords(extension_number,service_start_time,service_duration,target_temperature, fan_speed, fee , mode, generation_time) VALUES (%d,'%s', %ld, %f, '%s', %f,'%s','%s');",
+            sub_id, start, duration, target_temp, fan_speed, fee, work_mode, generation);
 
     rc = sqlite3_exec(db, sql, nullptr, nullptr, &zErrMsg);
     if (rc != SQLITE_OK) {

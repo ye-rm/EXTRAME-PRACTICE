@@ -16,10 +16,12 @@ add_subdirectory(lib/loguru) # defines target 'loguru::loguru'
 
 # set up qt environment
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_PREFIX_PATH "C:/Qt/5.15.17/msvc2019_64")
+
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 # set up sqlite3
 #add_compile_options(-l sqlite3)
-
 add_library(db ./sqlite/sqlite3.c)
 
 # socket library for scheduler and client
@@ -31,6 +33,8 @@ add_library(socket
 if (WIN32)
     target_link_libraries(socket ws2_32)
 endif (WIN32)
+
+
 target_link_libraries(socket loguru::loguru)
 
 add_library(service
@@ -57,8 +61,8 @@ add_library(client
         ./src/common/common.h
 )
 
-#add_executable(client_ui ./gui/client.cpp ./gui/client.h ./gui/client.ui)
-#target_link_libraries(client_ui client Qt5::Core Qt5::Widgets)
+add_executable(client_ui ./gui/client.cpp ./gui/client.ui)
+target_link_libraries(client_ui client Qt5::Core Qt5::Widgets)
 
 target_link_libraries(client socket)
 
@@ -94,6 +98,7 @@ target_link_libraries(client5 client)
 # 包含子项目。
 
 enable_testing()
+add_test(NAME client_ui COMMAND client_ui)
 add_test(NAME socket_test COMMAND socket_test)
 add_test(NAME server_test COMMAND server_test)
 add_test(NAME service_test COMMAND service_test)
