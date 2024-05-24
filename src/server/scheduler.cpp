@@ -324,10 +324,10 @@ void Scheduler::server_start() {
 
 void Scheduler::handle_msg() {
     while (true) {
-        sleep(1);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         listen_client();
         handle_message();
-        sleep(1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }
 

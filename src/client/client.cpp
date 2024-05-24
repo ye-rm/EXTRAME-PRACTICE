@@ -99,7 +99,7 @@ void Client::temp_emulation() {
         }
         LOG_F(INFO, "Client %d cur temp changed to %f", sub_id, double (cur_temp));
         // run per minute
-        sleep(SECOND_PER_MINUTE);
+		std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
     }
 }
 
@@ -288,14 +288,14 @@ void Client::client_working() {
     while (true) {
         if (power_status == OFF) {
             ignore();
-            sleep(5);
+			std::this_thread::sleep_for(std::chrono::seconds(5));
             continue;
         }
-        sleep(1);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
         get_status();
-        sleep(1);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
         listen_server();
-        sleep(1);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
         handle_server_response();
         check_finished();
     }
@@ -303,7 +303,7 @@ void Client::client_working() {
 
 void keep_alive() {
     while (true) {
-        sleep(2);
+        
     }
 }
 

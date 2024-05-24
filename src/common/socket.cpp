@@ -124,7 +124,7 @@ void Socket::listen_thread_func() {
         socklen_t len = sizeof(client_addr);
         message to_store{};
 #ifdef _WIN32
-        if(recvfrom(sockfd, (char *)msg, sizeof(message), 0, (struct sockaddr *) &client_addr, &len)==SOCKET_ERROR){
+        if(recvfrom(sockfd, (char *)& to_store, sizeof(message), 0, (struct sockaddr*)&client_addr, &len) == SOCKET_ERROR) {
             LOG_F(WARNING, "recvfrom error");
             return;
         }
@@ -150,7 +150,7 @@ int Socket::send_to_server(message msg) {
     server_addr.sin_addr.s_addr = inet_addr(server_ip.c_str());
     message tosend = msg;
 #ifdef _WIN32
-    if (sendto(sockfd, (char *)msge, sizeof(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
+    if (sendto(sockfd, (char *)&tosend, sizeof(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
         LOG_F(WARNING, "sendto server error");
         return -1;
     }
@@ -172,7 +172,7 @@ int Socket::send_to_client(int sub_id, message msg) {
     client_addr.sin_addr.s_addr = inet_addr(sub_ip_map[sub_id].c_str());
     message tosend = msg;
 #ifdef _WIN32
-    if (sendto(sockfd, (char *)msge, sizeof(message), 0, (struct sockaddr *) &client_addr, sizeof(client_addr)) == SOCKET_ERROR) {
+    if (sendto(sockfd, (char *) & tosend, sizeof(message), 0, (struct sockaddr*)&client_addr, sizeof(client_addr)) == SOCKET_ERROR) {
         LOG_F(WARNING, "%d sendto error",sub_id);
         return -1;
     }
