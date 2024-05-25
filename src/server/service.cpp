@@ -86,7 +86,6 @@ void service::generate_detailed_record() {
         return;
     }
     char start[20];
-    char create[20];
     char generation[20];
     char fan_speed[10];
     char work_mode[10];
@@ -101,10 +100,8 @@ void service::generate_detailed_record() {
         duration = 0;
     }
     struct tm *s = localtime(&start_time);
-    struct tm *c = localtime(&create_time);
     struct tm *g = localtime(&now);
     strftime(start, 20, "%Y-%m-%d %H:%M:%S", s);
-    strftime(create, 20, "%Y-%m-%d %H:%M:%S", c);
     strftime(generation, 20, "%Y-%m-%d %H:%M:%S", g);
     switch (cur_wind_speed) {
         case LOW_SPEED:

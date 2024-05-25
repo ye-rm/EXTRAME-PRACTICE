@@ -25,6 +25,7 @@ private:
     int capicity;
     Socket *server_socket;
     std::thread handle_msg_thread;
+	std::thread print_queue_thread;
     bool scheduler_running= false;
     void update_service_cur_temp(SUB_ID sub_id, double temp);
 
@@ -51,6 +52,8 @@ private:
     void handle_power_off(SUB_ID sub_id);
 
     void handle_msg();
+
+	void print_queue();
 
 public:
     Scheduler();

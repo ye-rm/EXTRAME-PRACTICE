@@ -319,6 +319,7 @@ void Scheduler::handle_power_off(int sub_id) {
 
 void Scheduler::server_start() {
     handle_msg_thread = std::thread(&Scheduler::handle_msg, this);
+	print_queue_thread = std::thread(&Scheduler::print_queue, this);
 }
 
 
@@ -342,4 +343,13 @@ std::string* Scheduler::get_queue_info() {
         *info += std::to_string(s->get_sub_id()) + " ";
     }
     return info;
+}
+
+void Scheduler::print_queue() {
+    while (true) {
+        auto queue_info = get_queue_info();
+        LOG_F(INFO, "%s", queue_info->c_str());
+        delete queue_info;
+		std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    }
 }

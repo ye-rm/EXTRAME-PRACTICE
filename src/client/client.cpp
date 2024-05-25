@@ -13,6 +13,7 @@ Client::Client(int sub_id) {
     cur_wind_speed = DEFAULT_SPEED;
     working_mode = DEFAULT_WORK_MODE;
     cur_status = WAITING;
+	estimate_fee = 0;
     client_socket = new Socket(sub_id);
     client_socket->listen_server();
     LOG_F(INFO, "Client %d init", sub_id);
@@ -55,12 +56,15 @@ void Client::temp_emulation() {
                     switch (cur_wind_speed) {
                         case HIGH_SPEED:
                             cur_temp = cur_temp - 1;
+							estimate_fee += 1;
                             break;
                         case MEDIUM_SPEED:
                             cur_temp = cur_temp - 0.5;
+							estimate_fee += 0.5;
                             break;
                         case LOW_SPEED:
                             cur_temp = cur_temp - 0.33;
+							estimate_fee += 0.33;
                             break;
                         default:
                             break;
@@ -240,6 +244,14 @@ int Client::get_cur_status() const {
     return cur_status;
 }
 
+double Client::get_estimate_fee() const {
+	return estimate_fee;
+}
+
+void Client::clear_estimate_fee() {
+	estimate_fee = 0;
+}
+
 // check whether client arrive at target temp
 // in cooling mode , if cur temp is lower than target temp -> finished
 // vice vesa for heating mode
@@ -293,9 +305,7 @@ void Client::client_working() {
         }
 		std::this_thread::sleep_for(std::chrono::seconds(1));
         get_status();
-		std::this_thread::sleep_for(std::chrono::seconds(1));
         listen_server();
-		std::this_thread::sleep_for(std::chrono::seconds(1));
         handle_server_response();
         check_finished();
     }
@@ -303,7 +313,6 @@ void Client::client_working() {
 
 void keep_alive() {
     while (true) {
-        
     }
 }
 

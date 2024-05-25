@@ -9,9 +9,6 @@ int main() {
     while (true){
         std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE*2));
         scheduler.schedule_service();
-        auto service = scheduler.get_queue_info();
-        LOG_F(INFO, "%s", (*service).c_str());
-        delete service;
     }
     return 0;
 }

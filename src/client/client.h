@@ -35,6 +35,7 @@ private:
     std::thread working_thread;
     std::thread keep_alive_thread;
     void client_working();
+    double estimate_fee;
 public:
     explicit Client(int sub_id);
 
@@ -60,6 +61,8 @@ public:
     int get_cur_wind_speed() const;//获取当前风速
     int get_working_mode() const;//获取工作模式
     int get_cur_status() const;//获取当前状态
+	double get_estimate_fee() const;//获取预估费用
+	void clear_estimate_fee();//清空预估费用
 };
 
 #endif //EXTRAME_PRACTICE_CLIENT_H
