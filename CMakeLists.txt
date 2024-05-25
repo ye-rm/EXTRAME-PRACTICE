@@ -95,6 +95,8 @@ target_link_libraries(client4 client)
 
 add_executable(client5 ./test/client5.cpp)
 target_link_libraries(client5 client)
+
+add_executable(manager_test ./src/manager/managertest.cpp)
 # 包含子项目。
 
 enable_testing()
