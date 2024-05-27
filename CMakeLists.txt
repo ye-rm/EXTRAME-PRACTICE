@@ -17,6 +17,9 @@ add_subdirectory(lib/loguru) # defines target 'loguru::loguru'
 # set up qt environment
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_PREFIX_PATH "D:/qt/6.7.1/msvc2019_64/lib/cmake")
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 
 find_package(Qt6 COMPONENTS Core Widgets sql REQUIRED)
