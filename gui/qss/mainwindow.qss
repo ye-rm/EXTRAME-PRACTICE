@@ -1,0 +1,113 @@
+﻿QMainWindow
+{
+    background: #FFFFFF;
+}
+
+QLineEdit
+{
+    background: #87CEFA;
+    border: none;
+    border-radius: 10px;
+    color: #3E3E3E;
+    font: 20px  "Microsoft YaHei";
+}
+
+QPushButton#pushButton_ok
+{
+    background: #87CEFA;
+    border: none;
+    border-radius: 10px;
+    color: #FFFFFF;
+    font: 20px  "Microsoft YaHei";
+}
+
+QPushButton
+{
+    background: #A9A9A9;
+    border: none;
+    color: #FFFFFF;
+    font: 20px  "Microsoft YaHei";
+}
+
+QWidget#widget_back
+{
+    border: none;
+    border-radius: 10px;
+    background-color: #4095E5;
+}
+
+QFrame
+{
+    border: none;
+    background-color: #4169E1;
+}
+
+QLabel
+{
+    border: none;
+    background-color: transparent;
+    color: #FFFFFF;
+    font: 16px "Microsoft YaHei";
+    font-weight: bold;
+}
+
+QLabel#label_speed1,#label_speed2,#label_speed3
+{
+    image: url(":/path/icon/wind.png");
+}
+
+QLabel#label_workMode_hot
+{
+    image: url(":/path/icon/hot.png");
+}
+
+QLabel#label_workMode_cold
+{
+    image: url(":/path/icon/cold.png");
+}
+
+QLabel#label_workStatus_working
+{
+    image: url(":/path/icon/working.png");
+}
+
+QLabel#label_workStatus_waiting
+{
+    image: url(":/path/icon/wait.png");
+}
+
+QLabel#label_off
+{
+    image: url(":/path/icon/off.png");
+}
+
+QLabel#label_on
+{
+    image: url(":/path/icon/on.png");
+}
+
+QLabel#label_currTempData,#label_desTempData
+{
+    color: #FFBF6B;
+    border: none;
+    background-color: transparent;
+    font: 60px "Microsoft YaHei";
+    font-weight: normal;
+}
+
+QLabel#label_currCostData,#label_allinCostData
+{
+    color: #FFBF6B;
+    border: none;
+    background-color: transparent;
+    font: 40px "Microsoft YaHei";
+    font-weight: normal;
+}
+
+QLabel#label_errorTip
+{
+    color: #FF0000;
+    border: none;
+    background-color: transparent;
+    font: 14px "Microsoft YaHei";
+}

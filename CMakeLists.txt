@@ -16,13 +16,13 @@ add_subdirectory(lib/loguru) # defines target 'loguru::loguru'
 
 # set up qt environment
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_PREFIX_PATH "D:/qt/6.7.1/msvc2019_64/lib/cmake")
+set(CMAKE_PREFIX_PATH "C:/Qt/5.15.17/msvc2019_64")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 
-find_package(Qt6 COMPONENTS Core Widgets sql REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 # set up sqlite3
 #add_compile_options(-l sqlite3)
@@ -66,15 +66,14 @@ add_library(client
 )
 
 add_executable(client_ui ./gui/client.cpp ./gui/client.ui)
-target_link_libraries(client_ui client Qt6::Core Qt6::Widgets)
+target_link_libraries(client_ui client Qt5::Core Qt5::Widgets)
 
 target_link_libraries(client socket)
 
-add_executable(RoomService ./gui./RoomService.cpp ./gui./RoomService.h ./gui./RoomService.ui)
-target_link_libraries(RoomService Qt6::Core Qt6::Widgets Qt6::Sql db)
-
-
-
+#add_executable(RoomService ./gui./RoomService.cpp ./gui./RoomService.h ./gui./RoomService.ui)
+#target_link_libraries(RoomService Qt6::Core Qt6::Widgets Qt6::Sql db)
+add_executable(airc ./gui/main.cpp ./gui/mainwindow.cpp ./gui/mainwindow.h ./gui/mainwindow.ui ./gui/airconditioneroptthread.cpp ./gui/airconditioneroptthread.h ./gui/gettemperaturethread.cpp ./gui/gettemperaturethread.h ./gui/qrc.qrc)
+target_link_libraries(airc Qt5::Core Qt5::Widgets client)
 add_executable(SERVER_SIDE src/main.cpp)
 target_link_libraries(SERVER_SIDE PRIVATE loguru::loguru)
 
