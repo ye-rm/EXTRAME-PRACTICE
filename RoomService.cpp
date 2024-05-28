@@ -22,13 +22,9 @@ void RoomService::setupDatabase() {
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("C:/Users/DELL/Source/Repos/ye-rm/EXTRAME-PRACTICE/sqlite/airconditioner.sqlite");
     if (!db.open()) {
-        QMessageBox::critical(this, "Database Error", db.lastError().text());
+        QMessageBox::critical(this, "数据库错误", db.lastError().text());
     }
 
-    // Ensure the table has required columns (run once to create or modify table)
-    // QSqlQuery query(db);
-    // query.exec("ALTER TABLE ServiceRecords ADD COLUMN customer_name TEXT");
-    // query.exec("ALTER TABLE ServiceRecords ADD COLUMN customer_phone TEXT");
 }
 
 void RoomService::setupUI() {
@@ -36,9 +32,8 @@ void RoomService::setupUI() {
     QVBoxLayout* layout = new QVBoxLayout(centralWidget);
 
     roomNumberInput = new QLineEdit(this);
-    guestIDInput = new QLineEdit(this); // Assuming you want to keep guest ID
+    guestIDInput = new QLineEdit(this);
     nameInput = new QLineEdit(this);
-    phoneInput = new QLineEdit(this);
     checkInButton = new QPushButton("入住", this);
     checkOutButton = new QPushButton("退房", this);
     billButton = new QPushButton("账单", this);
@@ -51,8 +46,6 @@ void RoomService::setupUI() {
     layout->addWidget(guestIDInput);
     layout->addWidget(new QLabel("姓名:", this));
     layout->addWidget(nameInput);
-    layout->addWidget(new QLabel("电话:", this));
-    layout->addWidget(phoneInput);
     layout->addWidget(checkInButton);
     layout->addWidget(checkOutButton);
     layout->addWidget(billButton);
@@ -69,22 +62,21 @@ void RoomService::setupUI() {
 
 void RoomService::on_checkInButton_clicked() {
     int roomNumber = roomNumberInput->text().toInt();
-    QString guestID = guestIDInput->text(); // Assuming you want to keep guest ID
+    QString guestID = guestIDInput->text();
     QString name = nameInput->text();
-    QString phone = phoneInput->text();
 
     QSqlQuery query;
-    query.prepare("INSERT INTO ServiceRecords (extension_number, service_start_time, customer_name, customer_phone) VALUES (?, ?, ?, ?)");
+    query.prepare("INSERT INTO RoomRecords (room_id, customer_id, customer_name, check_in_time) VALUES (?, ?, ?, ?)");
     query.addBindValue(roomNumber);
-    query.addBindValue(QDateTime::currentDateTime());
+    query.addBindValue(guestID);
     query.addBindValue(name);
-    query.addBindValue(phone);
+    query.addBindValue(QDateTime::currentDateTime());
 
     if (!query.exec()) {
-        QMessageBox::critical(this, "Database Error", query.lastError().text());
+        QMessageBox::critical(this, "数据库错误", query.lastError().text());
     }
     else {
-        QMessageBox::information(this, "Check In", "Guest checked in successfully.");
+        QMessageBox::information(this, "入住", "客户成功入住。");
     }
 }
 
@@ -92,60 +84,61 @@ void RoomService::on_checkOutButton_clicked() {
     int roomNumber = roomNumberInput->text().toInt();
 
     QSqlQuery query;
-    query.prepare("UPDATE ServiceRecords SET generation_time = ?, mode = 'Checked Out' WHERE extension_number = ? AND mode IS NULL");
+    query.prepare("UPDATE RoomRecords SET check_out_time = ? WHERE room_id = ? AND check_out_time IS NULL");
     query.addBindValue(QDateTime::currentDateTime());
     query.addBindValue(roomNumber);
 
     if (!query.exec()) {
-        QMessageBox::critical(this, "Database Error", query.lastError().text());
+        QMessageBox::critical(this, "数据库错误", query.lastError().text());
     }
     else {
-        QMessageBox::information(this, "Check Out", "Check-out successful.");
+        QMessageBox::information(this, "退房", "退房成功。");
     }
 }
 
 void RoomService::on_billButton_clicked() {
     int roomNumber = roomNumberInput->text().toInt();
     QSqlQuery query;
-    query.prepare("SELECT * FROM ServiceRecords WHERE extension_number = ? AND mode = 'Checked Out'");
+    query.prepare("SELECT * FROM RoomRecords WHERE room_id = ? AND check_out_time IS NOT NULL");
     query.addBindValue(roomNumber);
 
     if (!query.exec()) {
-        QMessageBox::critical(this, "Database Error", query.lastError().text());
+        QMessageBox::critical(this, "数据库错误", query.lastError().text());
     }
     else {
         QString bill;
         while (query.next()) {
-            bill += "Room: " + query.value("extension_number").toString() + "\n";
-            bill += "Fee: " + query.value("fee").toString() + "\n\n";
+            bill += "房间号: " + query.value("room_id").toString() + "\n";
+            bill += "费用: " + calculateBill(query.value("check_in_time").toDateTime(), query.value("check_out_time").toDateTime()) + "\n\n";
         }
-        QMessageBox::information(this, "Bill", bill);
+        QMessageBox::information(this, "账单", bill);
     }
 }
 
 void RoomService::on_detailsButton_clicked() {
     int roomNumber = roomNumberInput->text().toInt();
     QSqlQuery query;
-    query.prepare("SELECT * FROM ServiceRecords WHERE extension_number = ?");
+    query.prepare("SELECT * FROM RoomRecords WHERE room_id = ?");
     query.addBindValue(roomNumber);
 
     if (!query.exec()) {
-        QMessageBox::critical(this, "Database Error", query.lastError().text());
+        QMessageBox::critical(this, "数据库错误", query.lastError().text());
     }
     else {
         QString details;
         while (query.next()) {
-            details += "Room: " + query.value("extension_number").toString() + "\n";
-            details += "Start Time: " + query.value("service_start_time").toString() + "\n";
-            details += "End Time: " + query.value("generation_time").toString() + "\n";
-            details += "Duration: " + query.value("service_duration").toString() + "\n";
-            details += "Temperature: " + query.value("target_temperature").toString() + "\n";
-            details += "Fan Speed: " + query.value("fan_speed").toString() + "\n";
-            details += "Fee: " + query.value("fee").toString() + "\n";
-            details += "Mode: " + query.value("mode").toString() + "\n\n";
+            details += "房间号: " + query.value("room_id").toString() + "\n";
+            details += "开始时间: " + query.value("check_in_time").toString() + "\n";
+            details += "结束时间: " + query.value("check_out_time").toString() + "\n";
+            details += "客户姓名: " + query.value("customer_name").toString() + "\n\n";
         }
-        QMessageBox::information(this, "Details", details);
+        QMessageBox::information(this, "详单", details);
     }
+}
+
+QString RoomService::calculateBill(const QDateTime& startTime, const QDateTime& endTime) {
+    // 添加费用计算逻辑
+    return "具体费用"; // 暂时返回固定字符串
 }
 
 int main(int argc, char* argv[]) {

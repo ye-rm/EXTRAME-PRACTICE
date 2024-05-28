@@ -30,6 +30,7 @@ private:
     void setupUI();
     void setupDatabase();
     void updateRoomStatus(int roomNumber, const QString& status);
+    QString calculateBill(const QDateTime& startTime, const QDateTime& endTime);
 
     QSqlDatabase db;
     QLineEdit* roomNumberInput;
