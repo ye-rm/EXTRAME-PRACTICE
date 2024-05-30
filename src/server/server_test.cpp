@@ -3,7 +3,7 @@
 //
 #include "scheduler.h"
 #include <string>
-int main() {
+int main(int argc,char ** argv) {
     Scheduler scheduler;
     scheduler.server_start();
     while (true){

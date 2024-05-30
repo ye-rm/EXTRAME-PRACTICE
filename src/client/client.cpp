@@ -5,6 +5,8 @@
 
 
 Client::Client(int sub_id) {
+    std::string log_name="client"+std::to_string(sub_id)+".log";
+    loguru::add_file(log_name.c_str(), loguru::Truncate, loguru::Verbosity_MAX);
     this->sub_id = sub_id;
     power_status = false;
     init_default_temp();
@@ -76,12 +78,15 @@ void Client::temp_emulation() {
                     switch (cur_wind_speed) {
                         case HIGH_SPEED:
                             cur_temp = cur_temp + 1;
+                            estimate_fee += 1;
                             break;
                         case MEDIUM_SPEED:
                             cur_temp = cur_temp + 0.5;
+                            estimate_fee += 0.5;
                             break;
                         case LOW_SPEED:
                             cur_temp = cur_temp + 0.33;
+                            estimate_fee += 0.33;
                             break;
                         default:
                             break;
@@ -300,7 +305,7 @@ void Client::client_working() {
     while (true) {
         if (power_status == OFF) {
             ignore();
-			std::this_thread::sleep_for(std::chrono::seconds(5));
+			std::this_thread::sleep_for(std::chrono::seconds(1));
             continue;
         }
 		std::this_thread::sleep_for(std::chrono::seconds(1));

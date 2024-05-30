@@ -7,6 +7,9 @@
 
 #include <ctime>
 #include <string>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 #include "../../loguru.hpp"
 #include "../../sqlite/sqlite3.h"
 #include "../common/common.h"
@@ -20,8 +23,8 @@ private:
     int working_mood;
     bool serviced;
     int cur_status;
-    time_t create_time;
     time_t start_time;
+    time_t end_time;
 public:
     service(int sub_id);
 
@@ -34,6 +37,12 @@ public:
     int stop_service();
 
     int get_working_mood() const;
+
+    double get_cur_temp() const;
+
+    double get_target_temp() const;
+
+    time_t get_start_time() const;
 
     bool check_finished() const;
 
@@ -52,6 +61,8 @@ public:
     int change_target_temp(double temp);
 
     void generate_detailed_record();
+
+    void update_start_time();
 };
 
 #endif //EXTRAME_PRACTICE_SERVICE_H

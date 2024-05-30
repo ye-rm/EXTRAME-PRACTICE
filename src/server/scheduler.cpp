@@ -3,6 +3,7 @@
 
 Scheduler::Scheduler() {
     //Socket(0) indicates this is socket for scheduler
+    loguru::add_file("scheduler.log", loguru::Append, loguru::Verbosity_MAX);
     server_socket = new Socket(0);
     server_socket->listen_client();
     //init default target_temp... for scheduler
@@ -65,6 +66,9 @@ void Scheduler::update_service_target_temp(int sub_id, double temp) {
 
 void Scheduler::update_service_wind_speed(int sub_id, int speed) {
     service *s = find_service_by_sub_id(sub_id);
+    if(scheduler_running){
+        std::this_thread::sleep_for(std::chrono::microseconds (20));
+    }
     if (s != nullptr) {
         s->change_wind_speed(speed);
         //正在执行的任务改变风速，需要重新生成详单
@@ -74,11 +78,12 @@ void Scheduler::update_service_wind_speed(int sub_id, int speed) {
             s->start_service();
             LOG_F(INFO, "running service %d wind speed changed to %d and generate detailed list", sub_id, speed);
         } else if (s->ever_serviced()) {//曾经服务过的任务被调度程序放入等待队列，此时改变风速，需要重新生成详单
-            s->generate_detailed_record();
-            LOG_F(INFO, "waiting service have serviced %d wind speed changed to %d and generate detailed list", sub_id,
-                  speed);
+//            s->generate_detailed_record();
+//            LOG_F(INFO, "waiting service have serviced %d wind speed changed to %d and generate detailed list", sub_id,
+//                  speed);
+        }else {
+            LOG_F(INFO, "service %d wind speed changed to %d no need to generate", sub_id, speed);
         }
-        LOG_F(INFO, "service %d wind speed changed to %d no need to generate", sub_id, speed);
         return;
     }
     LOG_F(WARNING, "can not change wind speed service %d not found", sub_id);
@@ -187,7 +192,6 @@ void Scheduler::update_service_cur_temp() {
  */
 void Scheduler::schedule_service() {
     // 如果等待队列为空，不需要调度
-    std::vector<service *> to_generate;
     scheduler_running = true;
     if (waiting.empty()) {
         return;
@@ -204,8 +208,8 @@ void Scheduler::schedule_service() {
     // 遍历servicing, 停止服务，生成详单，放入等待队列
     while (!servicing.empty()) {
         service *s = servicing.back();
-        // 记录被换出的服务
-        to_generate.push_back(s);
+        s->stop_service();
+        s->generate_detailed_record();
         waiting.push_back(s);
         servicing.pop_back();
     }
@@ -217,22 +221,6 @@ void Scheduler::schedule_service() {
         s->start_service();
         servicing.push_back(s);
         waiting.pop_back();
-    }
-    // 在被换出的服务中查找，如果换出的服务调度后还在服务队列中，继续服务即可，不需要生成详单
-    bool need_generate;
-    for (auto s: to_generate) {
-        need_generate = true;
-        for(auto p: servicing){
-            // 如果服务上一步被换出后，调度后还在服务队列中，不需要生成详单
-            if (s==p){
-                need_generate = false;
-                break;
-            }
-        }
-        if (need_generate) {
-            s->stop_service();
-            s->generate_detailed_record();
-        }
     }
     scheduler_running = false;
 }
@@ -304,10 +292,10 @@ void Scheduler::handle_power_off(int sub_id) {
             if (it != waiting.end()) {
                 waiting.erase(it);
             }
-            // 如果要关闭的服务曾经服务过，生成详单
-            if (s->ever_serviced()) {
-                s->generate_detailed_record();
-            }
+//            // 如果要关闭的服务曾经服务过，生成详单
+//            if (s->ever_serviced()) {
+//                s->generate_detailed_record();
+//            }
         }
         delete s;
         LOG_F(INFO, "service %d power off", sub_id);
@@ -320,15 +308,14 @@ void Scheduler::handle_power_off(int sub_id) {
 void Scheduler::server_start() {
     handle_msg_thread = std::thread(&Scheduler::handle_msg, this);
 	print_queue_thread = std::thread(&Scheduler::print_queue, this);
+//    main_thread = std::thread(&Scheduler::main_loop, this);
 }
-
 
 void Scheduler::handle_msg() {
     while (true) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         listen_client();
         handle_message();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
@@ -347,9 +334,29 @@ std::string* Scheduler::get_queue_info() {
 
 void Scheduler::print_queue() {
     while (true) {
+        if(scheduler_running)
+            std::this_thread::sleep_for(std::chrono::microseconds (20));
         auto queue_info = get_queue_info();
         LOG_F(INFO, "%s", queue_info->c_str());
         delete queue_info;
 		std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    }
+}
+
+std::vector<service> Scheduler::copy_service() {
+    std::vector<service> copy;
+    for (auto s: servicing) {
+        copy.push_back(*s);
+    }
+    for (auto s: waiting) {
+        copy.push_back(*s);
+    }
+    return copy;
+}
+
+void Scheduler::main_loop() {
+    while (true){
+        std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE*2));
+        schedule_service();
     }
 }

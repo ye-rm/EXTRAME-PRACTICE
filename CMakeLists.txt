@@ -16,16 +16,18 @@ add_subdirectory(lib/loguru) # defines target 'loguru::loguru'
 
 # set up qt environment
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_PREFIX_PATH "C:/Qt/5.15.17/msvc2019_64")
+if (WIN32)
+set(CMAKE_PREFIX_PATH "C:/Qt/6.7.1/msvc2019_64")
+endif ()
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 
-find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Core Widgets Sql REQUIRED)
 
 # set up sqlite3
-#add_compile_options(-l sqlite3)
 add_library(db ./sqlite/sqlite3.c)
 
 # socket library for scheduler and client
@@ -47,7 +49,9 @@ add_library(service
         ./sqlite/sqlite3.h
         ./src/common/common.h
 )
-target_link_libraries(service db)
+target_link_libraries(service db loguru::loguru)
+
+
 
 add_library(server
         src/server/scheduler.cpp
@@ -55,8 +59,7 @@ add_library(server
         lib/rapidcsv/rapidcsv.h
         src/common/common.h
 )
-
-target_link_libraries(server service)
+target_link_libraries(server service socket)
 
 add_library(client
         ./src/client/client.cpp
@@ -65,17 +68,19 @@ add_library(client
         ./src/common/common.h
 )
 
-add_executable(client_ui ./gui/client.cpp ./gui/client.ui)
-target_link_libraries(client_ui client Qt5::Core Qt5::Widgets)
-
 target_link_libraries(client socket)
 
-#add_executable(RoomService ./gui./RoomService.cpp ./gui./RoomService.h ./gui./RoomService.ui)
-#target_link_libraries(RoomService Qt6::Core Qt6::Widgets Qt6::Sql db)
-add_executable(airc ./gui/main.cpp ./gui/mainwindow.cpp ./gui/mainwindow.h ./gui/mainwindow.ui ./gui/airconditioneroptthread.cpp ./gui/airconditioneroptthread.h ./gui/gettemperaturethread.cpp ./gui/gettemperaturethread.h ./gui/qrc.qrc)
-target_link_libraries(airc Qt5::Core Qt5::Widgets client)
-add_executable(SERVER_SIDE src/main.cpp)
-target_link_libraries(SERVER_SIDE PRIVATE loguru::loguru)
+add_executable(RoomService gui/reception/RoomService.cpp gui/reception/RoomService.h gui/reception/RoomService.ui gui/reception/BillWindow.cpp gui/reception/BillWindow.h gui/reception/AirConditionDetailsWindow.h gui/reception/AirConditionDetailsWindow.cpp)
+target_link_libraries(RoomService Qt6::Core Qt6::Widgets Qt6::Sql db)
+
+add_executable(airc gui/room_client/main.cpp gui/room_client/mainwindow.cpp gui/room_client/mainwindow.h gui/room_client/mainwindow.ui gui/room_client/airconditioneroptthread.cpp gui/room_client/airconditioneroptthread.h gui/room_client/gettemperaturethread.cpp gui/room_client/gettemperaturethread.h gui/room_client/qrc.qrc)
+target_link_libraries(airc Qt6::Core Qt6::Widgets client)
+
+add_executable(monitor gui/monitor/main.cpp gui/monitor/MainWindow.cpp gui/monitor/MainWindow.h)
+target_link_libraries(monitor Qt6::Core Qt6::Widgets service server)
+
+add_executable(data_manager gui/data_manager/main.cpp gui/data_manager/mainwindow.cpp gui/data_manager/mainwindow.h lib/rapidcsv/rapidcsv.h)
+target_link_libraries(data_manager Qt6::Core Qt6::Widgets db)
 
 add_executable(service_test ./src/server/service_test.cpp)
 target_link_libraries(service_test service loguru::loguru)

@@ -9,10 +9,10 @@ service::service(int sub_id) {
     this->sub_id = sub_id;
     serviced = false;
     start_time = 0;
+    end_time = 0;
     cur_temp = DEFAULT_TARGET_TEMP;
     target_temp = DEFAULT_TARGET_TEMP;
     cur_wind_speed = DEFAULT_SPEED;
-    create_time = time(nullptr);
     working_mood = DEFAULT_WORK_MODE;
     cur_status = WAITING;
 }
@@ -28,7 +28,7 @@ int service::change_wind_speed(int speed) {
 }
 
 bool service::check_finished() const {
-    if (working_mood==COOLING_MODE) {
+    if (working_mood == COOLING_MODE) {
         if (cur_temp <= target_temp) {
             return true;
         } else {
@@ -77,6 +77,9 @@ int service::chahge_working_mood(int mood) {
 }
 
 void service::generate_detailed_record() {
+    if (start_time == 0 || end_time == 0) {
+        return;
+    }
     sqlite3 *db;
     char *zErrMsg = nullptr;
     int rc;
@@ -85,24 +88,23 @@ void service::generate_detailed_record() {
         LOG_F(ERROR, "Can't open database: %s\n", sqlite3_errmsg(db));
         return;
     }
-    char start[20];
-    char generation[20];
+    std::stringstream start;
+    std::stringstream generation;
     char fan_speed[10];
     char work_mode[10];
     double fee;
-    time_t now = time(nullptr);
-    double diff = difftime(now, start_time);
-    // multi factor of duration
-    diff =  diff*(60.0/SECOND_PER_MINUTE);
-    now+=(long)diff;
+    double diff = difftime(end_time, start_time);
+    // multifactor of duration
+    diff = diff * (60.0 / SECOND_PER_MINUTE);
     long duration = static_cast<long>(diff / 60);
-    if (start_time == 0) {
-        duration = 0;
+    if (duration == 0 && diff > 40) {
+        duration = 1;
     }
-    struct tm *s = localtime(&start_time);
-    struct tm *g = localtime(&now);
-    strftime(start, 20, "%Y-%m-%d %H:%M:%S", s);
-    strftime(generation, 20, "%Y-%m-%d %H:%M:%S", g);
+    end_time = start_time + (long) diff;
+    struct tm *s_time = localtime(&start_time);
+    start << std::put_time(s_time, "%Y-%m-%d %H:%M:%S");
+    struct tm *e_time = localtime(&end_time);
+    generation << std::put_time(e_time, "%Y-%m-%d %H:%M:%S");
     switch (cur_wind_speed) {
         case LOW_SPEED:
             fee = (double) duration * PRICE_PER_MINUTE_AT_LOW_SPEED;
@@ -124,8 +126,8 @@ void service::generate_detailed_record() {
     }
     char sql[512];
     sprintf(sql,
-            "INSERT INTO ServiceRecords(extension_number,service_start_time,service_duration,target_temperature, fan_speed, fee , mode, generation_time) VALUES (%d,'%s', %ld, %f, '%s', %f,'%s','%s');",
-            sub_id, start, duration, target_temp, fan_speed, fee, work_mode, generation);
+            "INSERT INTO ServiceRecords(extension_number,service_start_time, generation_time,service_duration,target_temperature, fan_speed, fee , mode) VALUES (%d,'%s','%s', %ld, %f, '%s', %f,'%s');",
+            sub_id, start.str().c_str(), generation.str().c_str(), duration, target_temp, fan_speed, fee, work_mode);
 
     rc = sqlite3_exec(db, sql, nullptr, nullptr, &zErrMsg);
     if (rc != SQLITE_OK) {
@@ -144,9 +146,26 @@ int service::start_service() {
 
 int service::stop_service() {
     cur_status = WAITING;
+    end_time = time(nullptr);
     return 0;
 }
 
 bool service::ever_serviced() const {
     return serviced;
+}
+
+double service::get_cur_temp() const {
+    return cur_temp;
+}
+
+double service::get_target_temp() const {
+    return target_temp;
+}
+
+time_t service::get_start_time() const {
+    return start_time;
+}
+
+void service::update_start_time() {
+    start_time = time(nullptr);
 }

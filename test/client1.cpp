@@ -55,41 +55,40 @@ int main(){
     client.start_client_working();
     // 1
     client.power_on();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
     // 2
     client.change_target_temp(24);
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
     // 6
     client.change_wind_speed(HIGH_SPEED);
-    client.power_off();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
     // 10
     client.change_target_temp(28);
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
     // 15
     client.power_off();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
     // 19
     client.power_on();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+    std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
     // 25
     client.power_off();
     while (true){

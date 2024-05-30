@@ -11,6 +11,7 @@
 #include <vector>
 #include <queue>
 #include <thread>
+#include <mutex>
 #include <string>
 #include "service.h"
 #include "../../loguru.hpp"
@@ -26,6 +27,7 @@ private:
     Socket *server_socket;
     std::thread handle_msg_thread;
 	std::thread print_queue_thread;
+    std::thread main_thread;
     bool scheduler_running= false;
     void update_service_cur_temp(SUB_ID sub_id, double temp);
 
@@ -55,6 +57,8 @@ private:
 
 	void print_queue();
 
+    void main_loop();
+
 public:
     Scheduler();
 
@@ -77,6 +81,8 @@ public:
 
     // handle all msg from client from msg queue
     void handle_message();
+
+    std::vector<service>  copy_service();
 };
 
 #endif //EXTRAME_PRACTICE_SCHEDULER_H
