@@ -16,6 +16,9 @@ int main(){
     std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
 
     std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
+
+    // 5
+    client.change_target_temp(27);
     std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
     std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));
     std::this_thread::sleep_for(std::chrono::seconds(SECOND_PER_MINUTE));

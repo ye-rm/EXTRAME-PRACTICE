@@ -97,7 +97,7 @@ void service::generate_detailed_record() {
     // multifactor of duration
     diff = diff * (60.0 / SECOND_PER_MINUTE);
     long duration = static_cast<long>(diff / 60);
-    if (duration == 0 && diff > 40) {
+    if (duration == 0) {
         duration = 1;
     }
     end_time = start_time + (long) diff;

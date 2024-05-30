@@ -1,4 +1,4 @@
-// BillWindow.h
+// 退房结算时的账单窗口
 #ifndef BILLWINDOW_H
 #define BILLWINDOW_H
 

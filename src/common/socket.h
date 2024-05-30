@@ -54,7 +54,7 @@ enum message_type {
     OK,
 };
 
-//按一字节对齐
+//按1字节对齐
 #pragma pack(1)
 struct message {
     int sub_id;

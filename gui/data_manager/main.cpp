@@ -1,4 +1,5 @@
-// main.cpp
+// simple qt application to export data from a database to a csv file
+
 #include <QApplication>
 #include "mainwindow.h"
 

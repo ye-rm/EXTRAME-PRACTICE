@@ -1,5 +1,5 @@
 //
-// Created by yewenyu on 2024/5/10. client of airconditioner in roomS
+// Created by yewenyu on 2024/5/10. client of air conditioner in roomS
 //
 
 #ifndef EXTRAME_PRACTICE_CLIENT_H

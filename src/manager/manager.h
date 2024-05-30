@@ -1,8 +1,0 @@
-//
-// Created by 98770 on 2024/5/13.
-//
-
-#ifndef EXTRAME_PRACTICE_MANAGER_H
-#define EXTRAME_PRACTICE_MANAGER_H
-
-#endif //EXTRAME_PRACTICE_MANAGER_H

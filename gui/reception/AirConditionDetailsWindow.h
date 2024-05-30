@@ -1,4 +1,4 @@
-// AirConditionDetailsWindow.h
+// 账单窗口中可选择查看空调使用详单的窗口
 #ifndef AIRCONDITIONDETAILSWINDOW_H
 #define AIRCONDITIONDETAILSWINDOW_H
 

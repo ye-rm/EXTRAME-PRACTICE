@@ -1,5 +1,5 @@
 //
-// Created by 98770 on 2024/5/30.
+// Created by yewenyu on 2024/5/30, monitor ui for air conditioner
 //
 #include "MainWindow.h"
 #include "../../src/server/scheduler.h"
