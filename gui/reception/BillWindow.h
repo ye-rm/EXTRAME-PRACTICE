@@ -9,6 +9,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QTime>
+#include <QFile>
 #include "AirConditionDetailsWindow.h"
 
 class BillWindow : public QDialog {

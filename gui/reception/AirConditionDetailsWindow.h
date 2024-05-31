@@ -6,6 +6,7 @@
 #include <QSqlQueryModel>
 #include <QTableView>
 #include <QVBoxLayout>
+#include <QFile>
 
 class AirConditionDetailsWindow : public QDialog {
 Q_OBJECT

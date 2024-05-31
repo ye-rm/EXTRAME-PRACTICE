@@ -39,6 +39,18 @@ void BillWindow::setBillDetails(const QString &customerID, int roomNumber, doubl
     currentRoomNumber = roomNumber;
     currentCheckInDate = checkInDate;
     currentCheckOutDate = checkOutDate;
+    QString fileName = QString("住宿账单_%1_%2_%3.csv").arg(roomNumber).arg(checkInDate.toString("yyyyMMddHHmmss")).arg(checkOutDate.toString("yyyyMMddHHmmss"));
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+    out << "顾客ID: "<< customerID << "\n";
+    out << "房间号: " << roomNumber << "\n";
+    out << "房费: " << roomFee << " 元\n";
+    out << "空调使用费: " << airConditionFee << " 元\n";
+    out << "总费用: " << totalFee << " 元\n";
+    out << "入住时间: " << checkInDate.toString("yyyy-MM-dd HH:mm:ss") << "\n";
+    out << "退房时间: " << checkOutDate.toString("yyyy-MM-dd HH:mm:ss") << "\n";
+    file.close();
 }
 
 void BillWindow::on_detailsButton_clicked() {

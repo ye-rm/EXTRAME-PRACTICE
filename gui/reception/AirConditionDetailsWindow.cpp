@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QMessageBox>
+#include <QSqlRecord>
 #include <QTime>
 
 AirConditionDetailsWindow::AirConditionDetailsWindow(int roomNumber, const QDateTime &checkInDate, const QDateTime &checkOutDate, QWidget *parent)
@@ -25,6 +26,33 @@ AirConditionDetailsWindow::AirConditionDetailsWindow(int roomNumber, const QDate
     }
 
     setHeaders();
+
+    QString fileName = QString("空调账单_%1_%2_%3.csv")
+            .arg(roomNumber)
+            .arg(checkInDate.toString("yyyyMMddHHmmss"))
+            .arg(checkOutDate.toString("yyyyMMddHHmmss"));
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::critical(this, "文件错误", "无法创建文件: " + file.errorString());
+        return;
+    }
+    QTextStream out(&file);
+    out << "房间号,服务开始时间,详单生成时间,服务时长（分钟）,目标温度（摄氏度）,风速,费用,模式\n";
+
+    // 遍历查询结果并写入文件
+    for (int row = 0; row < model->rowCount(); ++row) {
+        out << model->record(row).value("extension_number").toString() << ","
+            << model->record(row).value("service_start_time").toDateTime().toString("yyyy-MM-dd HH:mm:ss") << ","
+            << model->record(row).value("detail_creation_time").toDateTime().toString("yyyy-MM-dd HH:mm:ss") << ","
+            << model->record(row).value("service_duration").toInt() << ","
+            << model->record(row).value("target_temperature").toDouble() << ","
+            << model->record(row).value("wind_speed").toInt() << ","
+            << model->record(row).value("fee").toDouble() << ","
+            << model->record(row).value("mode").toString() << "\n";
+    }
+
+    file.close();
 
     tableView->setModel(model);
     layout->addWidget(tableView);
