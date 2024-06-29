@@ -69,7 +69,7 @@ target_link_libraries(client socket)
 add_executable(RoomService gui/reception/RoomService.cpp gui/reception/RoomService.h gui/reception/RoomService.ui gui/reception/BillWindow.cpp gui/reception/BillWindow.h gui/reception/AirConditionDetailsWindow.h gui/reception/AirConditionDetailsWindow.cpp)
 target_link_libraries(RoomService Qt6::Core Qt6::Widgets Qt6::Sql db)
 
-#air conditioner control panel in room
+#air conditioner control panel in room with client id: 1
 add_executable(airc gui/room_client/main.cpp gui/room_client/mainwindow.cpp gui/room_client/mainwindow.h gui/room_client/mainwindow.ui gui/room_client/airconditioneroptthread.cpp gui/room_client/airconditioneroptthread.h  gui/room_client/qrc.qrc)
 target_link_libraries(airc Qt6::Core Qt6::Widgets client)
 

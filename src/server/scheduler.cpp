@@ -93,7 +93,12 @@ void Scheduler::create_new_service(int sub_id) {
     service *s = find_service_by_sub_id(sub_id);
     if (s == nullptr) {
         auto *new_s = new service(sub_id);
-        waiting.push_back(new_s);
+        if(servicing.size()<capicity&&!scheduler_running){
+            new_s->start_service();
+            servicing.push_back(new_s);
+        }else {
+            waiting.push_back(new_s);
+        }
         LOG_F(INFO, "service %d created", sub_id);
         return;
     }
@@ -268,6 +273,9 @@ void Scheduler::order_waitinglist() {
 
 void Scheduler::handle_power_off(int sub_id) {
     service *s = find_service_by_sub_id(sub_id);
+    if(scheduler_running){
+        std::this_thread::sleep_for(std::chrono::microseconds (20));
+    }
     if (s != nullptr) {
         // 要关闭的服务在服务队列中，此时需要将其从服务队列中删除，如果等待队列不为空，将等待队列的一个服务放入服务队列
         if (s->get_status() == WORKING) {
