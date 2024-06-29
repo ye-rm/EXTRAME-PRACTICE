@@ -37,6 +37,14 @@ endif ()
 
 允许`run.bat`可以同时以命令行形式启动服务端和5个客户端（可能需要修改其中可执行文件路径）
 
+如果允许提示缺少`Qt6`的`dll`，可在你Qt msvc环境的安装路径的`bin`目录下，在终端中运行
+
+```powershell
+PS C:\Qt\6.7.1\msvc2019_64\bin> .\windeployqt.exe C:\Users\98770\source\repos\ye-rm\EXTRAME-PRACTICE\out\build\x64-debug\RoomService.exe
+```
+
+把后面的路径替换为你电脑上编译得到`exe`的相应路径即可
+
 ## 项目文件
 
 ```
